@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Customize your broth, noodle texture, and toppings in the interactive kiosk.">
+  <title>Ramen Customizer | MyRamen</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Reset & lock viewport strictly */
+    html, body {
+      height: 100vh;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: var(--cream);
+    }
+
+    .kiosk-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      background-color: var(--cream);
+    }
+
+    /* 1. Top Header */
+    .top-nav {
+      height: 52px;
+      min-height: 52px;
+      padding: 0 20px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: var(--maroon);
+      color: white;
+      z-index: 20;
+    }
+
+    /* 2. Step Breadcrumb Tracker */
+    .step-tracker-bar {
+      height: 42px;
+      min-height: 42px;
+      padding: 4px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+    .tracker-pill {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #8c7368;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px 12px;
+      border-radius: 20px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .tracker-pill.active {
+      background-color: var(--maroon);
+      color: white;
+    }
+    .tracker-pill.completed {
+      color: var(--maroon);
+    }
+
+    /* 3. Main Workspace Row */
+    .builder-main-row {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Sidebar Panel */
+    .builder-sidebar {
+      width: 220px;
+      background-color: var(--cream);
+      border-right: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar-header {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 12px;
+      text-align: center;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--maroon);
+      line-height: 1.3;
+      flex-shrink: 0;
+    }
+
+    /* Vertically centered layout when options are in the bottom bar (Steps 2-4) */
+    .builder-sidebar.center-title {
+      justify-content: center;
+      background-color: var(--card-bg);
+    }
+    .builder-sidebar.center-title .sidebar-header {
+      border-bottom: none;
+      background: transparent;
+      font-size: 1.15rem;
+      letter-spacing: 1px;
+      padding: 20px;
+    }
+
+    .sidebar-options-vertical {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .tile-btn {
+      background: white;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      flex: 1;
+      min-height: 44px;
+      padding: 8px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .tile-btn.selected, .bottom-tile.selected {
+      background: linear-gradient(135deg, var(--maroon) 0%, #7b2933 100%) !important;
+      color: white !important;
+      border-color: var(--maroon-dark) !important;
+    }
+
+    .tile-btn.selected::after, .bottom-tile.selected::after {
+      content: '✓';
+      position: absolute;
+      right: 14px;
+      font-weight: 900;
+      font-size: 1rem;
+      color: #F8E7D1;
+    }
+
+    /* Central Stage Area */
+    .builder-stage {
+      flex: 1;
+      background: radial-gradient(circle at center, #3E1E14 0%, #251009 65%, #130704 100%);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .builder-stage::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 3px, transparent 3px, transparent 18px);
+      pointer-events: none;
+    }
+
+    .prompt-hint {
+      position: absolute;
+      top: 10px;
+      background: rgba(0,0,0,0.65);
+      color: #F8E7D1;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      border: 1px solid rgba(255,255,255,0.15);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Table setting & Ceramic Bowl */
+    .table-setting {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: min(44vh, 310px);
+      height: min(44vh, 310px);
+      margin: auto;
+    }
+
+    .bamboo-placemat {
+      position: absolute;
+      width: 122%;
+      height: 122%;
+      background: #1c140e;
+      border-radius: 18px;
+      border: 3px solid #332014;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.6);
+      background-image: repeating-linear-gradient(0deg, #2A1A12 0px, #2A1A12 4px, #1F130D 5px, #1F130D 8px);
+      z-index: 1;
+    }
+
+    .chopstick-pair {
+      position: absolute;
+      right: -24px;
+      top: 15%;
+      width: 10px;
+      height: 70%;
+      display: flex;
+      gap: 3px;
+      z-index: 2;
+    }
+    .stick {
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(to bottom, #d49a6a 0%, #8c532b 100%);
+      border-radius: 2px 2px 5px 5px;
+    }
+
+    .bowl-display {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: #19191b;
+      border: 10px solid #29292d;
+      outline: 4px solid #101012;
+      box-shadow: 0 16px 32px rgba(0,0,0,0.7), inset 0 3px 8px rgba(255,255,255,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+      overflow: hidden;
+    }
+
+    .bowl-liquid {
+      width: 90%;
+      height: 90%;
+      border-radius: 50%;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 6px 18px rgba(0,0,0,0.65);
+      transition: background 0.4s ease;
+    }
+
+    .bowl-noodle-graphic {
+      position: absolute;
+      inset: 6px;
+      border-radius: 50%;
+      background-image: 
+        repeating-radial-gradient(circle at 50% 50%, transparent 0, transparent 8px, rgba(240, 203, 114, 0.75) 9px, transparent 12px),
+        repeating-linear-gradient(45deg, transparent 0, transparent 10px, rgba(214, 168, 77, 0.5) 11px, transparent 14px);
+      opacity: 0.9;
+      z-index: 2;
+    }
+
+    #toppingLayer {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+    }
+
+    .topping-pill {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 16px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #2b1713;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.4);
+      cursor: default;
+    }
+
+    .topping-egg { background: linear-gradient(135deg, #FFF9E6 40%, #E8A838 100%); border: 2px solid #D4881E; }
+    .topping-chasu { background: linear-gradient(135deg, #E8A598 20%, #9C4B3D 100%); color: white; border: 2px solid #6E2F24; }
+    .topping-nori { background: #1C2B20; color: #A3D9A5; border: 1px solid #3A5340; }
+    .topping-naruto { background: #FFFFFF; color: #D63384; border: 2px dashed #D63384; }
+    .topping-menma { background: #D8B26E; color: #4A3311; border: 1px solid #8F6927; }
+    .topping-greens { background: #3B7A39; color: white; border: 1px solid #235222; }
+
+    /* 4. Bottom Horizontal Options Bar (Full Width across page, above footer) */
+    .builder-bottom-bar {
+      height: 58px;
+      min-height: 58px;
+      background: var(--cream);
+      border-top: 2px solid var(--maroon);
+      display: flex;
+      flex-shrink: 0;
+      width: 100%;
+      z-index: 15;
+    }
+
+    .bottom-tile {
+      flex: 1;
+      min-width: 0;
+      background: white;
+      border-right: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      padding: 4px 12px;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .bottom-tile:hover {
+      background-color: var(--card-bg);
+    }
+
+    .nav-arrow-tile {
+      width: 58px;
+      background: var(--card-bg);
+      border-left: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      color: var(--maroon);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s ease;
+    }
+    .nav-arrow-tile:hover {
+      background: var(--cream);
+    }
+
+    /* 5. In-Flow Actions Footer (Guaranteed Visible) */
+    .builder-actions-footer {
+      height: 54px;
+      min-height: 54px;
+      background-color: var(--maroon-dark);
+      border-top: 1px solid rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      flex-shrink: 0;
+      z-index: 30;
+      width: 100%;
+    }
+
+    .footer-btn {
+      background: white;
+      color: var(--maroon);
+      border: 2px solid var(--maroon);
+      border-radius: 6px;
+      padding: 8px 26px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .footer-btn:hover {
+      background: var(--cream);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="kiosk-container">
+    <!-- 1. Top Header -->
+    <header class="top-nav">
+      <a href="home.html" class="nav-logo serif">MYRAMEN</a>
+      <a href="home.html" style="color: white; font-size: 1.3rem;" title="Cancel & Return to Menu">
+        <i class="fa-solid fa-xmark"></i>
+      </a>
+    </header>
+
+    <!-- 2. Step Progress Bar -->
+    <nav class="step-tracker-bar" id="stepTracker">
+      <div class="tracker-pill active" onclick="jumpToStep(0)">1. Broth</div>
+      <div class="tracker-pill" onclick="jumpToStep(1)">2. Richness</div>
+      <div class="tracker-pill" onclick="jumpToStep(2)">3. Noodles</div>
+      <div class="tracker-pill" onclick="jumpToStep(3)">4. Texture</div>
+      <div class="tracker-pill" onclick="jumpToStep(4)">5. Toppings</div>
+    </nav>
+
+    <!-- 3. Upper Workspace -->
+    <div class="builder-main-row">
+      <aside class="builder-sidebar" id="sidebarContainer">
+        <div class="sidebar-header serif" id="sidebarTitle">CHOOSE YOUR SOUP VARIATION</div>
+        <div class="sidebar-options-vertical" id="sidebarOptions">
+          <!-- Populated dynamically via customizer.js -->
+        </div>
+      </aside>
+
+      <section class="builder-stage">
+        <div class="prompt-hint serif" id="promptHint">Select your broth, then click NEXT</div>
+
+        <div class="table-setting">
+          <div class="bamboo-placemat"></div>
+
+          <div class="chopstick-pair">
+            <div class="stick"></div>
+            <div class="stick"></div>
+          </div>
+
+          <div class="bowl-display">
+            <div class="bowl-liquid" id="liquidGraphic">
+              <div class="bowl-noodle-graphic"></div>
+              <div id="toppingLayer"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 4. Full-Width Bottom Options Bar (Steps 2–5) -->
+    <div class="builder-bottom-bar" id="bottomBarContainer" style="display: none;">
+      <!-- Populated dynamically via customizer.js -->
+    </div>
+
+    <!-- 5. Fixed Actions Footer -->
+    <footer class="builder-actions-footer">
+      <button class="footer-btn serif" id="builderBackBtn">BACK</button>
+      <button class="footer-btn serif" id="builderNextBtn">NEXT</button>
+    </footer>
+  </div>
+
+  <script src="js/customizer.js"></script>
+  <script src="js/transitions.js"></script>
+</body>
+</html>

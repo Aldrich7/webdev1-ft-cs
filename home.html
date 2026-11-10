@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Browse MyRamen signature recipes or build your custom ramen bowl.">
+  <title>Menu Catalog | MyRamen</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="kiosk-container">
+
+    <!-- Backdrop for Drawer -->
+    <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+    <!-- Side Menu Drawer -->
+    <aside class="side-drawer" id="sideDrawer">
+      <div class="drawer-header">
+        <span class="nav-logo serif" style="font-size: 1.5rem;">MYRAMEN</span>
+        <i class="fa-solid fa-xmark" id="closeDrawerBtn" style="font-size: 1.4rem; cursor: pointer;"></i>
+      </div>
+      <ul class="drawer-nav">
+        <li><a href="index.html"><i class="fa-solid fa-power-off"></i> Welcome Screen</a></li>
+        <li><a href="home.html"><i class="fa-solid fa-utensils"></i> Full Menu Catalog</a></li>
+        <li><a href="customize.html"><i class="fa-solid fa-wand-magic-sparkles"></i> Create Custom Ramen</a></li>
+        <li><a href="summary.html"><i class="fa-solid fa-cart-shopping"></i> View Cart / Order</a></li>
+      </ul>
+    </aside>
+
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+      <div class="nav-left">
+        <i class="fa-solid fa-bars" id="openDrawerBtn" style="cursor: pointer;" title="Open Menu"></i>
+        <a href="home.html" class="nav-logo serif">MYRAMEN</a>
+      </div>
+      <div class="nav-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="catalogSearch" placeholder="Search ramens, toppings...">
+        <i class="fa-solid fa-xmark" id="clearSearchBtn" style="cursor: pointer;" title="Clear"></i>
+      </div>
+      <div class="nav-icons">
+        <a href="home.html" title="Home"><i class="fa-solid fa-house"></i></a>
+        <a href="summary.html" title="Cart / Summary"><i class="fa-solid fa-cart-shopping"></i></a>
+      </div>
+    </header>
+
+    <main class="home-content">
+      <!-- Peeking Ramen Banner -->
+      <div class="peeking-ramen-strip">
+        <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1200&q=80" 
+             alt="Fresh ramen banner" 
+             onerror="this.src='https://images.unsplash.com/photo-1552611052-33e04de081de?auto=format&fit=crop&w=1200&q=80'">
+      </div>
+
+      <!-- Banner Strip -->
+      <div class="hero-strip serif">CHOOSE YOUR RAMEN!</div>
+      
+      <h2 class="catalog-title serif">Ramens</h2>
+
+      <!-- Carousel with Separated Price & Name -->
+      <div class="carousel-wrapper">
+        <div class="catalog-carousel" id="carouselList">
+          
+          <!-- Create Your Own Builder Card -->
+          <a href="customize.html" class="catalog-card" style="border: 2px solid var(--maroon);">
+            <div class="catalog-card-img" style="background: #F2E8DC;">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            <h3 class="serif" style="color: var(--maroon); margin-bottom: 6px;">Create your own - Ramen</h3>
+            <p>You get to choose your ramen noodle, ingredients, broth creaminess, and add-ons</p>
+          </a>
+
+          <!-- Tonkotsu -->
+          <div class="catalog-card" onclick="choosePreset('Tonkotsu', 150)">
+            <div class="catalog-card-img"><i class="fa-solid fa-bowl-rice"></i></div>
+            <div class="card-title-row serif">
+              <span class="card-price">&#8369;150</span>
+              <span class="card-separator">-</span>
+              <span class="card-name">Tonkotsu</span>
+            </div>
+            <p>Creamy pork bone broth served with thin straight noodles, chashu pork belly, wood ear mushrooms, scallions, and marinated egg.</p>
+          </div>
+
+          <!-- Shoyu -->
+          <div class="catalog-card" onclick="choosePreset('Shoyu', 150)">
+            <div class="catalog-card-img"><i class="fa-solid fa-bowl-food"></i></div>
+            <div class="card-title-row serif">
+              <span class="card-price">&#8369;150</span>
+              <span class="card-separator">-</span>
+              <span class="card-name">Shoyu</span>
+            </div>
+            <p>Savory soy sauce and chicken-dashi broth served with springy curly noodles, chashu pork belly, bamboo shoots, and nori.</p>
+          </div>
+
+          <!-- Miso -->
+          <div class="catalog-card" onclick="choosePreset('Miso', 150)">
+            <div class="catalog-card-img"><i class="fa-solid fa-utensils"></i></div>
+            <div class="card-title-row serif">
+              <span class="card-price">&#8369;150</span>
+              <span class="card-separator">-</span>
+              <span class="card-name">Miso</span>
+            </div>
+            <p>Rich fermented soybean paste broth served with thick wavy noodles, ground pork, sweet corn, butter, and scallions.</p>
+          </div>
+
+          <!-- Shio -->
+          <div class="catalog-card" onclick="choosePreset('Shio', 150)">
+            <div class="catalog-card-img"><i class="fa-solid fa-mug-hot"></i></div>
+            <div class="card-title-row serif">
+              <span class="card-price">&#8369;150</span>
+              <span class="card-separator">-</span>
+              <span class="card-name">Shio</span>
+            </div>
+            <p>Light sea salt and chicken broth served with thin noodles, tender chicken or pork, bamboo shoots, and fish cake.</p>
+          </div>
+
+        </div>
+
+        <button class="scroll-arrow-btn" id="scrollRightBtn" title="Next items" style="margin-left: 10px;">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/transitions.js"></script>
+  <script>
+    const drawer = document.getElementById('sideDrawer');
+    const backdrop = document.getElementById('drawerBackdrop');
+    const openBtn = document.getElementById('openDrawerBtn');
+    const closeBtn = document.getElementById('closeDrawerBtn');
+
+    function openMenu() {
+      drawer.classList.add('open');
+      backdrop.classList.add('active');
+    }
+
+    function closeMenu() {
+      drawer.classList.remove('open');
+      backdrop.classList.remove('active');
+    }
+
+    openBtn.addEventListener('click', openMenu);
+    closeBtn.addEventListener('click', closeMenu);
+    backdrop.addEventListener('click', closeMenu);
+
+    const carousel = document.getElementById('carouselList');
+    document.getElementById('scrollRightBtn').addEventListener('click', () => {
+      carousel.scrollBy({ left: 230, behavior: 'smooth' });
+    });
+
+    const searchInput = document.getElementById('catalogSearch');
+    const clearBtn = document.getElementById('clearSearchBtn');
+
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      document.querySelectorAll('.catalog-card').forEach(card => {
+        const text = card.innerText.toLowerCase();
+        card.style.display = text.includes(q) ? 'flex' : 'none';
+      });
+    });
+
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      document.querySelectorAll('.catalog-card').forEach(card => card.style.display = 'flex');
+      searchInput.focus();
+    });
+
+    function choosePreset(name, price) {
+      const order = {
+        isPreset: true,
+        name: name,
+        soup: name,
+        richness: 'Signature',
+        noodleVar: 'Ramen',
+        noodleType: 'Standard',
+        toppings: ['Chashu', 'Egg', 'Nori', 'Scallions'],
+        addons: ['Fried Tofu'],
+        qty: { noodles: 1, soup: 1, toppings: 1 }
+      };
+      localStorage.setItem('myRamenOrder', JSON.stringify(order));
+
+      document.body.classList.add('page-exit');
+      setTimeout(() => {
+        window.location.href = 'summary.html';
+      }, 240);
+    }
+  </script>
+</body>
+</html>

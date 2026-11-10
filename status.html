@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MyRamen order queue processing and completion screen.">
+  <title>Order Status | MyRamen</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="kiosk-container">
+    <header class="top-nav" style="width: 100%;">
+      <span class="nav-logo serif">MYRAMEN</span>
+    </header>
+
+    <!-- Phase 1: Progress Bar -->
+    <div class="center-panel" id="phasePreparing">
+      <i class="fa-solid fa-bowl-food" style="font-size: 6rem; color: #F5EFEB; margin-bottom: 20px;"></i>
+      <div class="progress-bar">
+        <div class="progress-fill" id="statusProgress"></div>
+      </div>
+      <h2 class="serif" style="font-size: 2.2rem; margin-top: 20px;">Preparing Your Order...</h2>
+    </div>
+
+    <!-- Phase 2: Thank You Display -->
+    <div class="center-panel" id="phaseThankYou" style="display: none;">
+      <div class="welcome-bowl" style="width: 220px; height: 220px; margin-bottom: 24px; border: 10px solid #29292d;">
+        <i class="fa-solid fa-check" style="font-size: 5rem; color: #4ADE80;"></i>
+      </div>
+      <h2 class="serif" style="font-size: 2.5rem; letter-spacing: 1px;">Thank You For Ordering!</h2>
+      <p style="margin-top: 15px; font-size: 0.95rem; opacity: 0.85;">Your ticket has been sent to the kitchen display queue.</p>
+    </div>
+  </div>
+
+  <script src="js/transitions.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const fill = document.getElementById('statusProgress');
+      setTimeout(() => { fill.style.width = '100%'; }, 100);
+
+      // Transition to Thank You after 3.2 seconds
+      setTimeout(() => {
+        document.getElementById('phasePreparing').style.display = 'none';
+        document.getElementById('phaseThankYou').style.display = 'flex';
+      }, 3200);
+
+      // Return to Welcome Page after 6.5 seconds
+      setTimeout(() => {
+        document.body.classList.add('page-exit');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 240);
+      }, 6500);
+    });
+  </script>
+</body>
+</html>

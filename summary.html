@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Review your personalized ramen bill and checkout.">
+  <title>Order Summary | MyRamen</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="kiosk-container">
+    <header class="top-nav">
+      <span class="nav-logo serif">MYRAMEN</span>
+      <div class="nav-icons">
+        <a href="home.html" title="Back to Menu"><i class="fa-solid fa-house"></i></a>
+      </div>
+    </header>
+
+    <div class="summary-layout">
+      <!-- Left Details Panel -->
+      <div class="summary-left">
+        <div class="summary-header-box">
+          <i class="fa-solid fa-bowl-food" style="font-size: 2.2rem; color: #F5EFEB;"></i>
+          <div>
+            <h2 class="serif" id="summaryHeader">CREATE YOUR OWN - RAMEN</h2>
+            <p style="font-size: 0.8rem; opacity: 0.9;">You get to choose your ramen noodle, ingredients, broth creaminess, and add-ons</p>
+          </div>
+        </div>
+
+        <div class="summary-item-card">
+          <span id="sumNoodleText">NOODLES - Firm Ramen</span>
+          <div class="qty-controls">
+            <button class="qty-btn" onclick="changeQty('noodles', -1)">-</button>
+            <span id="qtyNoodles">1</span>
+            <button class="qty-btn" onclick="changeQty('noodles', 1)">+</button>
+          </div>
+        </div>
+
+        <div class="summary-item-card">
+          <span id="sumSoupText">SOUP - Normal Tsukemen</span>
+          <div class="qty-controls">
+            <button class="qty-btn" onclick="changeQty('soup', -1)">-</button>
+            <span id="qtySoup">1</span>
+            <button class="qty-btn" onclick="changeQty('soup', 1)">+</button>
+          </div>
+        </div>
+
+        <div class="summary-item-card">
+          <span id="sumToppingText">TOPPING - Egg, Naruto, Nori, Chashu</span>
+          <div class="qty-controls">
+            <button class="qty-btn" onclick="changeQty('toppings', -1)">-</button>
+            <span id="qtyToppings">1</span>
+            <button class="qty-btn" onclick="changeQty('toppings', 1)">+</button>
+          </div>
+        </div>
+
+        <div class="addon-chips">
+          <div class="addon-chip selected" id="addonTofu" onclick="toggleAddon('Fried Tofu', this)">
+            <i class="fa-solid fa-cubes-stacked" style="color: var(--maroon);"></i>
+            <div>
+              <strong>Fried Tofu</strong>
+              <p style="font-size: 0.8rem; color: #666;">&#8369;20</p>
+            </div>
+          </div>
+          <div class="addon-chip" id="addonMushroom" onclick="toggleAddon('Mushroom', this)">
+            <i class="fa-solid fa-leaf" style="color: var(--maroon);"></i>
+            <div>
+              <strong>Mushroom</strong>
+              <p style="font-size: 0.8rem; color: #666;">&#8369;20</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Bill Totals & Submit -->
+      <div class="summary-right">
+        <div>
+          <h2 class="serif" style="font-size: 1.6rem; margin-bottom: 20px;">ORDER SUMMARY</h2>
+          <div class="summary-bill-details">
+            <div style="display: flex; justify-content: space-between;">
+              <span>Noodles</span>
+              <span>&#8369;<span id="billNoodles">30</span></span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Toppings</span>
+              <span>&#8369;<span id="billToppings">100</span></span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Add-ons</span>
+              <span>&#8369;<span id="billAddons">20</span></span>
+            </div>
+            <div class="total-bill" style="display: flex; justify-content: space-between;">
+              <span>TOTAL BILL:</span>
+              <span>&#8369;<span id="billTotal">150</span></span>
+            </div>
+          </div>
+        </div>
+
+        <a href="status.html" class="order-it-btn serif">ORDER IT!</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/summary.js"></script>
+  <script src="js/transitions.js"></script>
+</body>
+</html>
