@@ -7,6 +7,148 @@
   <title>Menu Catalog | MyRamen</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ==================== CARD RAMEN MINI PREVIEWS ==================== */
+    .mini-bowl-graphic {
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      background: #18181b;
+      border: 4px solid #27272a;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.35), inset 0 2px 4px rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .mini-broth {
+      width: 88%;
+      height: 88%;
+      border-radius: 50%;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+    }
+
+    .mini-noodles {
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      border: 3px dashed #E5C368;
+      opacity: 0.85;
+    }
+
+    /* Broth Shaders */
+    .broth-tonkotsu {
+      background: radial-gradient(circle at 45% 45%, #F7EFE1 0%, #E8D5BC 60%, #BFA785 100%);
+    }
+    .broth-shoyu {
+      background: radial-gradient(circle at 45% 45%, #C97228 0%, #9C4B13 65%, #5C2704 100%);
+    }
+    .broth-miso {
+      background: radial-gradient(circle at 45% 45%, #C25B18 0%, #943D0B 65%, #5E2204 100%);
+    }
+    .broth-shio {
+      background: radial-gradient(circle at 45% 45%, #F5DE98 0%, #D8B758 65%, #9E7D25 100%);
+    }
+
+    /* Mini Topping Garnishes */
+    .mini-garnish {
+      position: absolute;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+
+    /* Egg Slice */
+    .garnish-egg {
+      width: 18px;
+      height: 18px;
+      background: #FFF9E6;
+      border: 1px solid #D4881E;
+      top: 14%;
+      left: 18%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .garnish-egg::after {
+      content: '';
+      width: 9px;
+      height: 9px;
+      background: #E8A838;
+      border-radius: 50%;
+    }
+
+    /* Chashu Pork */
+    .garnish-chasu {
+      width: 22px;
+      height: 15px;
+      background: #A64B3B;
+      border-radius: 8px;
+      border: 1px solid #6E2F24;
+      bottom: 18%;
+      left: 20%;
+    }
+
+    /* Nori Sheet */
+    .garnish-nori {
+      width: 14px;
+      height: 20px;
+      background: #1C2B20;
+      border-radius: 2px;
+      border: 1px solid #0E1711;
+      top: 16%;
+      right: 18%;
+      transform: rotate(15deg);
+    }
+
+    /* Naruto Fishcake Swirl */
+    .garnish-naruto {
+      width: 15px;
+      height: 15px;
+      background: #FFFFFF;
+      border-radius: 50%;
+      border: 2px dashed #D63384;
+      top: 25%;
+      left: 28%;
+    }
+
+    /* Corn kernels */
+    .garnish-corn {
+      width: 6px;
+      height: 6px;
+      background: #FFD23F;
+      border-radius: 50%;
+      box-shadow: 7px 2px 0 #FFD23F, 3px 6px 0 #FFC000;
+      top: 24%;
+      right: 26%;
+    }
+
+    /* Scallions / Bamboo Menma */
+    .garnish-scallions {
+      width: 12px;
+      height: 4px;
+      background: #3B7A39;
+      border-radius: 2px;
+      box-shadow: 2px 5px 0 #3B7A39, -3px 8px 0 #4C8C4A;
+      bottom: 24%;
+      right: 22%;
+    }
+
+    /* Card Layout Adjustments */
+    .catalog-card-img {
+      background: #F4EFE6;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 115px;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
 
@@ -59,22 +201,31 @@
       
       <h2 class="catalog-title serif">Ramens</h2>
 
-      <!-- Carousel with Separated Price & Name -->
+      <!-- Carousel with Dish-Accurate Visual Icons -->
       <div class="carousel-wrapper">
         <div class="catalog-carousel" id="carouselList">
           
-          <!-- Create Your Own Builder Card -->
+          <!-- 1. Custom Ramen Builder Card -->
           <a href="customize.html" class="catalog-card" style="border: 2px solid var(--maroon);">
-            <div class="catalog-card-img" style="background: #F2E8DC;">
-              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <div class="catalog-card-img" style="background: #EFE6D8;">
+              <i class="fa-solid fa-wand-magic-sparkles" style="font-size: 2.4rem; color: var(--maroon);"></i>
             </div>
             <h3 class="serif" style="color: var(--maroon); margin-bottom: 6px;">Create your own - Ramen</h3>
             <p>You get to choose your ramen noodle, ingredients, broth creaminess, and add-ons</p>
           </a>
 
-          <!-- Tonkotsu -->
+          <!-- 2. Tonkotsu (Pork Bone + Chashu + Egg) -->
           <div class="catalog-card" onclick="choosePreset('Tonkotsu', 150)">
-            <div class="catalog-card-img"><i class="fa-solid fa-bowl-rice"></i></div>
+            <div class="catalog-card-img">
+              <div class="mini-bowl-graphic">
+                <div class="mini-broth broth-tonkotsu">
+                  <div class="mini-noodles"></div>
+                  <div class="mini-garnish garnish-egg"></div>
+                  <div class="mini-garnish garnish-chasu"></div>
+                  <div class="mini-garnish garnish-scallions"></div>
+                </div>
+              </div>
+            </div>
             <div class="card-title-row serif">
               <span class="card-price">&#8369;150</span>
               <span class="card-separator">-</span>
@@ -83,9 +234,18 @@
             <p>Creamy pork bone broth served with thin straight noodles, chashu pork belly, wood ear mushrooms, scallions, and marinated egg.</p>
           </div>
 
-          <!-- Shoyu -->
+          <!-- 3. Shoyu (Soy Dashi + Nori + Naruto) -->
           <div class="catalog-card" onclick="choosePreset('Shoyu', 150)">
-            <div class="catalog-card-img"><i class="fa-solid fa-bowl-food"></i></div>
+            <div class="catalog-card-img">
+              <div class="mini-bowl-graphic">
+                <div class="mini-broth broth-shoyu">
+                  <div class="mini-noodles"></div>
+                  <div class="mini-garnish garnish-nori"></div>
+                  <div class="mini-garnish garnish-naruto"></div>
+                  <div class="mini-garnish garnish-chasu"></div>
+                </div>
+              </div>
+            </div>
             <div class="card-title-row serif">
               <span class="card-price">&#8369;150</span>
               <span class="card-separator">-</span>
@@ -94,9 +254,18 @@
             <p>Savory soy sauce and chicken-dashi broth served with springy curly noodles, chashu pork belly, bamboo shoots, and nori.</p>
           </div>
 
-          <!-- Miso -->
+          <!-- 4. Miso (Soybean Paste + Ground Pork + Sweet Corn) -->
           <div class="catalog-card" onclick="choosePreset('Miso', 150)">
-            <div class="catalog-card-img"><i class="fa-solid fa-utensils"></i></div>
+            <div class="catalog-card-img">
+              <div class="mini-bowl-graphic">
+                <div class="mini-broth broth-miso">
+                  <div class="mini-noodles"></div>
+                  <div class="mini-garnish garnish-corn"></div>
+                  <div class="mini-garnish garnish-chasu"></div>
+                  <div class="mini-garnish garnish-scallions"></div>
+                </div>
+              </div>
+            </div>
             <div class="card-title-row serif">
               <span class="card-price">&#8369;150</span>
               <span class="card-separator">-</span>
@@ -105,9 +274,18 @@
             <p>Rich fermented soybean paste broth served with thick wavy noodles, ground pork, sweet corn, butter, and scallions.</p>
           </div>
 
-          <!-- Shio -->
+          <!-- 5. Shio (Clear Sea Salt + Chicken/Dashi + Scallions) -->
           <div class="catalog-card" onclick="choosePreset('Shio', 150)">
-            <div class="catalog-card-img"><i class="fa-solid fa-mug-hot"></i></div>
+            <div class="catalog-card-img">
+              <div class="mini-bowl-graphic">
+                <div class="mini-broth broth-shio">
+                  <div class="mini-noodles"></div>
+                  <div class="mini-garnish garnish-naruto"></div>
+                  <div class="mini-garnish garnish-scallions"></div>
+                  <div class="mini-garnish garnish-egg"></div>
+                </div>
+              </div>
+            </div>
             <div class="card-title-row serif">
               <span class="card-price">&#8369;150</span>
               <span class="card-separator">-</span>
