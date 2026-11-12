@@ -27,7 +27,7 @@
       background-color: var(--cream);
     }
 
-    /* 1. Top Header */
+    /* Top Nav */
     .top-nav {
       height: 52px;
       min-height: 52px;
@@ -41,7 +41,30 @@
       z-index: 20;
     }
 
-    /* 2. Step Breadcrumb Tracker */
+    .cart-btn-wrapper {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -10px;
+      background-color: #D9A036;
+      color: #1e0609;
+      font-size: 0.72rem;
+      font-weight: 900;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+      display: none;
+    }
+
+    /* Step Breadcrumb Tracker */
     .step-tracker-bar {
       height: 42px;
       min-height: 42px;
@@ -76,7 +99,7 @@
       color: var(--maroon);
     }
 
-    /* 3. Main Workspace Row */
+    /* Workspace */
     .builder-main-row {
       display: flex;
       flex: 1;
@@ -86,7 +109,6 @@
       position: relative;
     }
 
-    /* Sidebar Panel */
     .builder-sidebar {
       width: 220px;
       background-color: var(--cream);
@@ -110,7 +132,6 @@
       flex-shrink: 0;
     }
 
-    /* Vertically centered layout when options are in the bottom bar (Steps 2-4) */
     .builder-sidebar.center-title {
       justify-content: center;
       background-color: var(--card-bg);
@@ -162,7 +183,6 @@
       color: #F8E7D1;
     }
 
-    /* Central Stage Area */
     .builder-stage {
       flex: 1;
       background: radial-gradient(circle at center, #3E1E14 0%, #251009 65%, #130704 100%);
@@ -174,14 +194,6 @@
       padding: 10px;
       overflow: hidden;
       min-height: 0;
-    }
-
-    .builder-stage::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 3px, transparent 3px, transparent 18px);
-      pointer-events: none;
     }
 
     .prompt-hint {
@@ -197,7 +209,6 @@
       z-index: 10;
     }
 
-    /* Table setting & Ceramic Bowl */
     .table-setting {
       position: relative;
       display: flex;
@@ -274,12 +285,7 @@
       z-index: 2;
     }
 
-    #toppingLayer {
-      position: absolute;
-      inset: 0;
-      z-index: 3;
-    }
-
+    #toppingLayer { position: absolute; inset: 0; z-index: 3; }
     .topping-pill {
       position: absolute;
       display: flex;
@@ -302,7 +308,6 @@
     .topping-menma { background: #D8B26E; color: #4A3311; border: 1px solid #8F6927; }
     .topping-greens { background: #3B7A39; color: white; border: 1px solid #235222; }
 
-    /* 4. Bottom Horizontal Options Bar (Full Width across page, above footer) */
     .builder-bottom-bar {
       height: 58px;
       min-height: 58px;
@@ -331,9 +336,7 @@
       transition: all 0.2s ease;
     }
 
-    .bottom-tile:hover {
-      background-color: var(--card-bg);
-    }
+    .bottom-tile:hover { background-color: var(--card-bg); }
 
     .nav-arrow-tile {
       width: 58px;
@@ -346,13 +349,9 @@
       color: var(--maroon);
       cursor: pointer;
       flex-shrink: 0;
-      transition: background 0.2s ease;
-    }
-    .nav-arrow-tile:hover {
-      background: var(--cream);
     }
 
-    /* 5. In-Flow Actions Footer (Guaranteed Visible) */
+    /* Fixed Actions Footer */
     .builder-actions-footer {
       height: 54px;
       min-height: 54px;
@@ -372,8 +371,8 @@
       color: var(--maroon);
       border: 2px solid var(--maroon);
       border-radius: 6px;
-      padding: 8px 26px;
-      font-size: 0.95rem;
+      padding: 8px 24px;
+      font-size: 0.92rem;
       font-weight: 800;
       cursor: pointer;
       box-shadow: 0 2px 8px rgba(0,0,0,0.3);
@@ -389,15 +388,21 @@
 <body>
 
   <div class="kiosk-container">
-    <!-- 1. Top Header -->
+    <!-- Top Header -->
     <header class="top-nav">
       <a href="home.html" class="nav-logo serif">MYRAMEN</a>
-      <a href="home.html" style="color: white; font-size: 1.3rem;" title="Cancel & Return to Menu">
-        <i class="fa-solid fa-xmark"></i>
-      </a>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <a href="summary.html" class="cart-btn-wrapper" style="color: white; font-size: 1.15rem;" title="View Cart">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="cart-badge" id="customizerCartBadge">0</span>
+        </a>
+        <a href="home.html" style="color: white; font-size: 1.3rem;" title="Cancel & Return to Menu">
+          <i class="fa-solid fa-xmark"></i>
+        </a>
+      </div>
     </header>
 
-    <!-- 2. Step Progress Bar -->
+    <!-- Step Progress Bar -->
     <nav class="step-tracker-bar" id="stepTracker">
       <div class="tracker-pill active" onclick="jumpToStep(0)">1. Broth</div>
       <div class="tracker-pill" onclick="jumpToStep(1)">2. Richness</div>
@@ -406,7 +411,7 @@
       <div class="tracker-pill" onclick="jumpToStep(4)">5. Toppings</div>
     </nav>
 
-    <!-- 3. Upper Workspace -->
+    <!-- Workspace -->
     <div class="builder-main-row">
       <aside class="builder-sidebar" id="sidebarContainer">
         <div class="sidebar-header serif" id="sidebarTitle">CHOOSE YOUR SOUP VARIATION</div>
@@ -436,15 +441,20 @@
       </section>
     </div>
 
-    <!-- 4. Full-Width Bottom Options Bar (Steps 2–5) -->
+    <!-- Full-Width Bottom Options Bar (Steps 2–5) -->
     <div class="builder-bottom-bar" id="bottomBarContainer" style="display: none;">
       <!-- Populated dynamically via customizer.js -->
     </div>
 
-    <!-- 5. Fixed Actions Footer -->
+    <!-- Fixed Actions Footer -->
     <footer class="builder-actions-footer">
       <button class="footer-btn serif" id="builderBackBtn">BACK</button>
-      <button class="footer-btn serif" id="builderNextBtn">NEXT</button>
+      <div style="display: flex; gap: 10px;">
+        <button class="footer-btn serif" id="builderAddMoreBtn" style="display: none; background: transparent; color: white; border-color: rgba(255,255,255,0.6);">
+          + Add & Pick More
+        </button>
+        <button class="footer-btn serif" id="builderNextBtn">NEXT</button>
+      </div>
     </footer>
   </div>
 

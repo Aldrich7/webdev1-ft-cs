@@ -7,6 +7,103 @@
   <title>Order Summary | MyRamen</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    .cart-header-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .add-more-btn {
+      background: white;
+      color: var(--maroon);
+      border: 2px solid var(--maroon);
+      border-radius: 6px;
+      padding: 6px 16px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .add-more-btn:hover {
+      background: var(--maroon);
+      color: white;
+    }
+
+    .cart-items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 52vh;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .cart-item-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+
+    .cart-item-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid #f0e8dc;
+      padding-bottom: 8px;
+    }
+
+    .cart-item-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--maroon);
+    }
+
+    .cart-item-details {
+      font-size: 0.85rem;
+      color: #665;
+      line-height: 1.4;
+    }
+
+    .cart-item-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+
+    .remove-btn {
+      background: transparent;
+      border: none;
+      color: #b91c1c;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .remove-btn:hover {
+      text-decoration: underline;
+    }
+
+    .empty-cart-state {
+      text-align: center;
+      padding: 40px 20px;
+      background: white;
+      border-radius: 10px;
+      border: 1px dashed var(--border);
+    }
+  </style>
 </head>
 <body>
 
@@ -19,52 +116,28 @@
     </header>
 
     <div class="summary-layout">
-      <!-- Left Details Panel -->
+      <!-- Left Details Panel: Multi-Item List -->
       <div class="summary-left">
-        <div class="summary-header-box">
-          <i class="fa-solid fa-bowl-food" style="font-size: 2.2rem; color: #F5EFEB;"></i>
-          <div>
-            <h2 class="serif" id="summaryHeader">CREATE YOUR OWN - RAMEN</h2>
-            <p style="font-size: 0.8rem; opacity: 0.9;">You get to choose your ramen noodle, ingredients, broth creaminess, and add-ons</p>
-          </div>
+        <div class="cart-header-actions">
+          <h2 class="serif" style="color: var(--maroon); font-size: 1.6rem;">YOUR RAMEN BOWLS</h2>
+          <a href="home.html" class="add-more-btn serif"><i class="fa-solid fa-plus"></i> Add Another Ramen</a>
         </div>
 
-        <div class="summary-item-card">
-          <span id="sumNoodleText">NOODLES - Firm Ramen</span>
-          <div class="qty-controls">
-            <button class="qty-btn" onclick="changeQty('noodles', -1)">-</button>
-            <span id="qtyNoodles">1</span>
-            <button class="qty-btn" onclick="changeQty('noodles', 1)">+</button>
-          </div>
+        <div class="cart-items-list" id="cartItemsList">
+          <!-- Populated dynamically via summary.js -->
         </div>
 
-        <div class="summary-item-card">
-          <span id="sumSoupText">SOUP - Normal Tsukemen</span>
-          <div class="qty-controls">
-            <button class="qty-btn" onclick="changeQty('soup', -1)">-</button>
-            <span id="qtySoup">1</span>
-            <button class="qty-btn" onclick="changeQty('soup', 1)">+</button>
-          </div>
-        </div>
-
-        <div class="summary-item-card">
-          <span id="sumToppingText">TOPPING - Egg, Naruto, Nori, Chashu</span>
-          <div class="qty-controls">
-            <button class="qty-btn" onclick="changeQty('toppings', -1)">-</button>
-            <span id="qtyToppings">1</span>
-            <button class="qty-btn" onclick="changeQty('toppings', 1)">+</button>
-          </div>
-        </div>
-
+        <!-- Global Table Add-ons -->
+        <h3 class="serif" style="color: var(--maroon); margin-top: 14px; font-size: 1.15rem;">Side Add-ons</h3>
         <div class="addon-chips">
-          <div class="addon-chip selected" id="addonTofu" onclick="toggleAddon('Fried Tofu', this)">
+          <div class="addon-chip" id="addonTofu" onclick="toggleAddon('Fried Tofu', 20)">
             <i class="fa-solid fa-cubes-stacked" style="color: var(--maroon);"></i>
             <div>
               <strong>Fried Tofu</strong>
               <p style="font-size: 0.8rem; color: #666;">&#8369;20</p>
             </div>
           </div>
-          <div class="addon-chip" id="addonMushroom" onclick="toggleAddon('Mushroom', this)">
+          <div class="addon-chip" id="addonMushroom" onclick="toggleAddon('Mushroom', 20)">
             <i class="fa-solid fa-leaf" style="color: var(--maroon);"></i>
             <div>
               <strong>Mushroom</strong>
@@ -80,25 +153,21 @@
           <h2 class="serif" style="font-size: 1.6rem; margin-bottom: 20px;">ORDER SUMMARY</h2>
           <div class="summary-bill-details">
             <div style="display: flex; justify-content: space-between;">
-              <span>Noodles</span>
-              <span>&#8369;<span id="billNoodles">30</span></span>
+              <span>Total Bowls (<span id="totalBowlsCount">0</span>):</span>
+              <span>&#8369;<span id="billBowls">0</span></span>
             </div>
             <div style="display: flex; justify-content: space-between;">
-              <span>Toppings</span>
-              <span>&#8369;<span id="billToppings">100</span></span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span>Add-ons</span>
-              <span>&#8369;<span id="billAddons">20</span></span>
+              <span>Add-ons:</span>
+              <span>&#8369;<span id="billAddons">0</span></span>
             </div>
             <div class="total-bill" style="display: flex; justify-content: space-between;">
               <span>TOTAL BILL:</span>
-              <span>&#8369;<span id="billTotal">150</span></span>
+              <span>&#8369;<span id="billTotal">0</span></span>
             </div>
           </div>
         </div>
 
-        <a href="status.html" class="order-it-btn serif">ORDER IT!</a>
+        <button class="order-it-btn serif" id="orderSubmitBtn" onclick="checkoutOrder()">ORDER IT!</button>
       </div>
     </div>
   </div>

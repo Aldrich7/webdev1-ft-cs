@@ -33,7 +33,7 @@ const steps = [
     layout: "mixed",
     sideOptions: ["Egg", "Naruto"],
     bottomOptions: ["Menma", "Nori", "Nira", "Cabbage", "Chashu"],
-    hint: "Select toppings and add-ons, then click NEXT"
+    hint: "Pick toppings, then review cart or add more!"
   }
 ];
 
@@ -47,22 +47,14 @@ let order = {
   noodleType: "Firm",
   toppings: ["Egg", "Naruto", "Nori", "Chashu"],
   addons: ["Fried Tofu"],
-  qty: { noodles: 1, soup: 1, toppings: 1 }
+  price: 150
 };
 
 const soupThemes = {
-  Tsukemen: {
-    bg: "radial-gradient(circle at 45% 45%, #D47A22 0%, #A84E11 65%, #6B2E05 100%)",
-  },
-  Shio: {
-    bg: "radial-gradient(circle at 45% 45%, #F0D48B 0%, #D4B259 65%, #947525 100%)",
-  },
-  Miso: {
-    bg: "radial-gradient(circle at 45% 45%, #C26321 0%, #94400E 65%, #5E2605 100%)",
-  },
-  Tonkotsu: {
-    bg: "radial-gradient(circle at 45% 45%, #F7EFE1 0%, #E8D5BC 60%, #BFA785 100%)",
-  }
+  Tsukemen: { bg: "radial-gradient(circle at 45% 45%, #D47A22 0%, #A84E11 65%, #6B2E05 100%)" },
+  Shio: { bg: "radial-gradient(circle at 45% 45%, #F0D48B 0%, #D4B259 65%, #947525 100%)" },
+  Miso: { bg: "radial-gradient(circle at 45% 45%, #C26321 0%, #94400E 65%, #5E2605 100%)" },
+  Tonkotsu: { bg: "radial-gradient(circle at 45% 45%, #F7EFE1 0%, #E8D5BC 60%, #BFA785 100%)" }
 };
 
 const toppingMeta = {
@@ -83,6 +75,23 @@ const plateCoordinates = [
   { top: "66%", left: "34%" }
 ];
 
+function updateCartBadge() {
+  const badge = document.getElementById("customizerCartBadge");
+  if (!badge) return;
+  try {
+    const cart = JSON.parse(localStorage.getItem("myRamenCart")) || [];
+    const totalQty = cart.reduce((acc, item) => acc + (item.quantity || 1), 0);
+    if (totalQty > 0) {
+      badge.innerText = totalQty;
+      badge.style.display = "flex";
+    } else {
+      badge.style.display = "none";
+    }
+  } catch (e) {
+    badge.style.display = "none";
+  }
+}
+
 function renderStep() {
   const step = steps[currentStep];
   const sidebar = document.getElementById("sidebarContainer");
@@ -90,13 +99,15 @@ function renderStep() {
   const sideOptions = document.getElementById("sidebarOptions");
   const bottomBar = document.getElementById("bottomBarContainer");
   const promptHint = document.getElementById("promptHint");
+  const nextBtn = document.getElementById("builderNextBtn");
+  const addMoreBtn = document.getElementById("builderAddMoreBtn");
 
   sideTitle.innerHTML = step.title;
   if (promptHint) promptHint.innerText = step.hint;
   sideOptions.innerHTML = "";
   bottomBar.innerHTML = "";
 
-  // Update Tracker Pills
+  // Step Tracker update
   const trackerPills = document.querySelectorAll(".tracker-pill");
   trackerPills.forEach((pill, idx) => {
     pill.classList.remove("active", "completed");
@@ -104,7 +115,16 @@ function renderStep() {
     else if (idx < currentStep) pill.classList.add("completed");
   });
 
-  // Step 1: Vertical Selection (Options in sidebar, hide bottom bar)
+  // Modify action buttons on final step (Step 5)
+  if (currentStep === steps.length - 1) {
+    nextBtn.innerText = "Review Cart & Checkout";
+    addMoreBtn.style.display = "inline-block";
+  } else {
+    nextBtn.innerText = "NEXT";
+    addMoreBtn.style.display = "none";
+  }
+
+  // Step 1: Broth in Sidebar
   if (step.layout === "vertical") {
     sidebar.classList.remove("center-title");
     bottomBar.style.display = "none";
@@ -122,7 +142,7 @@ function renderStep() {
       sideOptions.appendChild(btn);
     });
   } 
-  // Steps 2-4: Horizontal Selection (Sidebar becomes centered title, full-width bottom bar)
+  // Steps 2-4: Horizontal Bottom Selection
   else if (step.layout === "horizontal") {
     sidebar.classList.add("center-title");
     bottomBar.style.display = "flex";
@@ -146,7 +166,7 @@ function renderStep() {
     arrow.onclick = nextStep;
     bottomBar.appendChild(arrow);
   } 
-  // Step 5: Mixed Layout (Toppings in both sidebar and bottom bar)
+  // Step 5: Mixed Toppings
   else if (step.layout === "mixed") {
     sidebar.classList.remove("center-title");
     bottomBar.style.display = "flex";
@@ -175,6 +195,7 @@ function renderStep() {
   }
 
   updateVisualBowls();
+  updateCartBadge();
 }
 
 function updateVisualBowls() {
@@ -211,17 +232,51 @@ function toggleTopping(item) {
   renderStep();
 }
 
+// Add customized bowl to multi-item cart
+function saveCurrentCustomToCart() {
+  let cart = [];
+  try {
+    cart = JSON.parse(localStorage.getItem("myRamenCart")) || [];
+  } catch (e) {
+    cart = [];
+  }
+
+  cart.push({
+    id: "custom_" + Date.now(),
+    isPreset: false,
+    name: "Custom Ramen",
+    soup: order.soup,
+    richness: order.richness,
+    noodleVar: order.noodleVar,
+    noodleType: order.noodleType,
+    toppings: [...order.toppings],
+    addons: [...order.addons],
+    price: 150,
+    quantity: 1
+  });
+
+  localStorage.setItem("myRamenCart", JSON.stringify(cart));
+}
+
 function nextStep() {
   if (currentStep < steps.length - 1) {
     currentStep++;
     renderStep();
   } else {
-    localStorage.setItem("myRamenOrder", JSON.stringify(order));
+    saveCurrentCustomToCart();
     document.body.classList.add('page-exit');
     setTimeout(() => {
       window.location.href = "summary.html";
     }, 240);
   }
+}
+
+function addMoreCustom() {
+  saveCurrentCustomToCart();
+  document.body.classList.add('page-exit');
+  setTimeout(() => {
+    window.location.href = "home.html";
+  }, 240);
 }
 
 function prevStep() {
@@ -245,6 +300,7 @@ function jumpToStep(targetIndex) {
 
 document.getElementById("builderNextBtn").addEventListener("click", nextStep);
 document.getElementById("builderBackBtn").addEventListener("click", prevStep);
+document.getElementById("builderAddMoreBtn").addEventListener("click", addMoreCustom);
 
 document.addEventListener("DOMContentLoaded", () => {
   renderStep();
