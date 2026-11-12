@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin & Kitchen Dashboard | MyRamen</title>
+  <link rel="icon" type="image/png" href="img/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* PIN Lock Screen Overlay */
+    .pin-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: var(--maroon-dark);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .pin-card {
+      background: var(--cream);
+      border: 3px solid var(--border);
+      border-radius: 14px;
+      padding: 32px 28px;
+      max-width: 360px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    }
+
+    .pin-input {
+      width: 100%;
+      padding: 12px;
+      font-size: 1.6rem;
+      text-align: center;
+      letter-spacing: 10px;
+      border: 2px solid var(--maroon);
+      border-radius: 8px;
+      margin: 16px 0;
+      font-weight: 800;
+      color: var(--maroon);
+      background: white;
+    }
+
+    .pin-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--maroon);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .pin-btn:hover { background: var(--maroon-dark); }
+
+    /* Top Nav Action Buttons */
+    .admin-nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-action-pill {
+      font-size: 0.9rem;
+      background: rgba(255,255,255,0.15);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s ease;
+    }
+    .nav-action-pill:hover {
+      background: rgba(255,255,255,0.28);
+    }
+
+    .nav-logout-btn {
+      background: #b91c1c;
+      border-color: #991b1b;
+    }
+    .nav-logout-btn:hover {
+      background: #991b1b;
+    }
+
+    /* Admin Layout */
+    .admin-main {
+      padding: 24px;
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Top Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--maroon);
+      border-radius: 10px;
+      padding: 18px 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: #665;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--maroon);
+      margin-top: 4px;
+    }
+
+    /* Navigation Tabs */
+    .admin-tabs {
+      display: flex;
+      gap: 10px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: white;
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: var(--maroon);
+      color: white;
+      border-color: var(--maroon);
+    }
+
+    .tab-section {
+      display: none;
+    }
+    .tab-section.active {
+      display: block;
+    }
+
+    /* Kitchen Order Tickets Grid */
+    .tickets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 18px;
+    }
+
+    .ticket-card {
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .ticket-card.status-preparing { border-top: 6px solid #D97706; }
+    .ticket-card.status-ready { border-top: 6px solid #16A34A; }
+    .ticket-card.status-completed { border-top: 6px solid #6B7280; opacity: 0.75; }
+
+    .ticket-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #EFE8DC;
+      padding-bottom: 10px;
+    }
+
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .badge-preparing { background: #FEF3C7; color: #B45309; }
+    .badge-ready { background: #DCFCE7; color: #15803D; }
+    .badge-completed { background: #F3F4F6; color: #4B5563; }
+
+    .ticket-item {
+      background: #FAF7F2;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid #EAE0D2;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+
+    .ticket-note-box {
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      color: #991B1B;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-top: 8px;
+    }
+
+    .ticket-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+    .btn-ready { background: #16A34A; color: white; }
+    .btn-complete { background: var(--maroon); color: white; }
+
+    /* Stock Management Grid */
+    .stock-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .stock-category-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+    }
+
+    .stock-category-card h3 {
+      color: var(--maroon);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+
+    .stock-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px dashed #EFE8DC;
+      font-weight: 600;
+    }
+    .stock-row:last-child { border-bottom: none; }
+
+    .stock-toggle-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    .in-stock { background: #DCFCE7; color: #15803D; }
+    .sold-out { background: #FEE2E2; color: #B91C1C; }
+  </style>
+</head>
+<body>
+
+  <!-- Staff PIN Lock Overlay -->
+  <div class="pin-overlay" id="pinOverlay">
+    <div class="pin-card">
+      <i class="fa-solid fa-lock" style="font-size: 2.2rem; color: var(--maroon); margin-bottom: 10px;"></i>
+      <h2 class="serif" style="color: var(--maroon);">Staff Access</h2>
+      <p style="font-size: 0.85rem; color: #665; margin-top: 4px;">Enter your 4-digit staff PIN to continue</p>
+      <input type="password" id="adminPinInput" class="pin-input" maxlength="4" placeholder="••••">
+      <p id="pinErrorMsg" style="color: #b91c1c; font-size: 0.85rem; font-weight: 700; display: none; margin-bottom: 10px;">Incorrect PIN. Please try again.</p>
+      <button class="pin-btn serif" onclick="verifyPin()">Unlock Dashboard</button>
+      <a href="home.html" style="display: inline-block; margin-top: 14px; font-size: 0.85rem; color: var(--maroon); text-decoration: none; font-weight: 700;">← Back to Kiosk Menu</a>
+    </div>
+  </div>
+
+  <div class="kiosk-container">
+    <!-- Top Nav -->
+    <header class="top-nav">
+      <div class="nav-left">
+        <span class="nav-logo serif">MYRAMEN <span style="font-size: 0.9rem; background: #D9A036; color: #1e0609; padding: 3px 10px; border-radius: 12px; vertical-align: middle; margin-left: 6px;">ADMIN</span></span>
+      </div>
+      <div class="admin-nav-actions">
+        <a href="home.html" class="nav-action-pill" title="Return to Customer Kiosk">
+          <i class="fa-solid fa-tablet-screen-button"></i> Customer View
+        </a>
+        <button class="nav-action-pill nav-logout-btn" onclick="logoutAdmin()" title="Lock Admin Panel">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <!-- Live Metrics Overview -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Active Kitchen Orders</div>
+          <div class="stat-value" id="statActiveOrders">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Bowls Sold</div>
+          <div class="stat-value" id="statBowlsSold">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-value">&#8369;<span id="statRevenue">0</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Sold-Out Items</div>
+          <div class="stat-value" id="statSoldOutCount">0</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="admin-tabs">
+        <button class="tab-btn active" onclick="switchTab('queueTab', this)">
+          <i class="fa-solid fa-fire-burner"></i> Live Kitchen Queue
+        </button>
+        <button class="tab-btn" onclick="switchTab('stockTab', this)">
+          <i class="fa-solid fa-boxes-stacked"></i> Stock & Availability
+        </button>
+        <button class="tab-btn" onclick="clearCompletedOrders()" style="margin-left: auto; color: #b91c1c;">
+          <i class="fa-solid fa-broom"></i> Clear Completed
+        </button>
+      </div>
+
+      <!-- TAB 1: KITCHEN QUEUE -->
+      <section id="queueTab" class="tab-section active">
+        <div class="tickets-grid" id="kitchenTicketsGrid">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+
+      <!-- TAB 2: INVENTORY / SOLD OUT TOGGLES -->
+      <section id="stockTab" class="tab-section">
+        <p style="font-size: 0.9rem; color: #665; margin-bottom: 16px;">
+          Toggle items as <strong>Sold Out</strong> to immediately disable them on the customer ordering screens.
+        </p>
+        <div class="stock-grid" id="stockCategoriesGrid">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/transitions.js"></script>
+  <script>
+    const defaultStock = {
+      "Signature Ramens": ["Tonkotsu", "Shoyu", "Miso", "Shio"],
+      "Broth Bases": ["Tsukemen", "Shio", "Miso", "Tonkotsu"],
+      "Toppings": ["Egg", "Naruto", "Menma", "Nori", "Nira", "Cabbage", "Chashu"],
+      "Side Add-ons": ["Fried Tofu", "Mushroom", "Gyoza", "Siomai", "Kimchi"]
+    };
+
+    function verifyPin() {
+      const inputEl = document.getElementById('adminPinInput');
+      const errorEl = document.getElementById('pinErrorMsg');
+
+      if (inputEl.value === '1234') {
+        sessionStorage.setItem('myRamenAdminUnlocked', 'true');
+        errorEl.style.display = 'none';
+        inputEl.value = '';
+        document.getElementById('pinOverlay').style.display = 'none';
+      } else {
+        errorEl.style.display = 'block';
+        inputEl.value = '';
+        inputEl.focus();
+      }
+    }
+
+    function logoutAdmin() {
+      sessionStorage.removeItem('myRamenAdminUnlocked');
+      document.getElementById('adminPinInput').value = '';
+      document.getElementById('pinErrorMsg').style.display = 'none';
+      document.getElementById('pinOverlay').style.display = 'flex';
+      document.getElementById('adminPinInput').focus();
+    }
+
+    document.getElementById('adminPinInput').addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') verifyPin();
+    });
+
+    function switchTab(tabId, btnEl) {
+      document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btnEl.classList.add('active');
+    }
+
+    function getOrdersQueue() {
+      try {
+        return JSON.parse(localStorage.getItem('myRamenOrdersQueue')) || [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveOrdersQueue(orders) {
+      localStorage.setItem('myRamenOrdersQueue', JSON.stringify(orders));
+      renderAdminDashboard();
+    }
+
+    function updateOrderStatus(orderId, newStatus) {
+      const orders = getOrdersQueue();
+      const target = orders.find(o => o.id === orderId);
+      if (target) {
+        target.status = newStatus;
+        saveOrdersQueue(orders);
+      }
+    }
+
+    function clearCompletedOrders() {
+      const orders = getOrdersQueue().filter(o => o.status !== 'Completed');
+      saveOrdersQueue(orders);
+    }
+
+    function getSoldOutItems() {
+      try {
+        return JSON.parse(localStorage.getItem('myRamenSoldOut')) || [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function toggleStockItem(itemName) {
+      let soldOut = getSoldOutItems();
+      const idx = soldOut.indexOf(itemName);
+      if (idx > -1) {
+        soldOut.splice(idx, 1);
+      } else {
+        soldOut.push(itemName);
+      }
+      localStorage.setItem('myRamenSoldOut', JSON.stringify(soldOut));
+      renderAdminDashboard();
+    }
+
+    function renderAdminDashboard() {
+      const orders = getOrdersQueue();
+      const soldOut = getSoldOutItems();
+
+      const activeCount = orders.filter(o => o.status !== 'Completed').length;
+      let bowlsSold = 0;
+      let totalRevenue = 0;
+
+      orders.forEach(o => {
+        totalRevenue += (o.totalBill || 0);
+        (o.items || []).forEach(item => {
+          bowlsSold += (item.quantity || 1);
+        });
+      });
+
+      document.getElementById('statActiveOrders').innerText = activeCount;
+      document.getElementById('statBowlsSold').innerText = bowlsSold;
+      document.getElementById('statRevenue').innerText = totalRevenue;
+      document.getElementById('statSoldOutCount').innerText = soldOut.length;
+
+      const grid = document.getElementById('kitchenTicketsGrid');
+      if (orders.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; background: white; border-radius: 10px; border: 1px dashed var(--border);">
+            <i class="fa-solid fa-receipt" style="font-size: 3rem; color: #c4b098; margin-bottom: 12px;"></i>
+            <h3 class="serif" style="color: var(--maroon);">No Orders in Queue</h3>
+            <p style="font-size: 0.9rem; color: #665; margin-top: 6px;">Orders submitted from the customer kiosk will appear here automatically.</p>
+          </div>
+        `;
+      } else {
+        const sorted = [...orders].reverse();
+        grid.innerHTML = sorted.map(order => {
+          const statusClass = order.status === 'Preparing' ? 'status-preparing' : (order.status === 'Ready' ? 'status-ready' : 'status-completed');
+          const badgeClass = order.status === 'Preparing' ? 'badge-preparing' : (order.status === 'Ready' ? 'badge-ready' : 'badge-completed');
+
+          const itemsHtml = (order.items || []).map(item => {
+            const name = item.isPreset ? `${item.name} Ramen` : `Custom Ramen (${item.soup})`;
+            const specs = item.isPreset 
+              ? `Signature ${item.soup}` 
+              : `${item.richness} ${item.soup} • ${item.noodleType} ${item.noodleVar}`;
+
+            const topEntries = Object.entries(item.toppingQuantities || {});
+            const activeToppings = topEntries
+              .filter(([_, q]) => q > 0)
+              .map(([t, q]) => q > 1 ? `${t} (x${q})` : t)
+              .join(', ');
+            
+            const removedToppings = topEntries
+              .filter(([_, q]) => q === 0)
+              .map(([t, _]) => `NO ${t.toUpperCase()}`)
+              .join(', ');
+
+            return `
+              <div class="ticket-item">
+                <div style="display: flex; justify-content: space-between; font-weight: 800; color: var(--maroon);">
+                  <span>${item.quantity || 1}x ${name}</span>
+                </div>
+                <div style="font-size: 0.8rem; color: #555; margin-top: 2px;">${specs}</div>
+                ${activeToppings ? `<div style="font-size: 0.8rem; color: #333; margin-top: 4px;"><strong>Toppings:</strong> ${activeToppings}</div>` : ''}
+                ${removedToppings ? `<div style="font-size: 0.78rem; color: #b91c1c; font-weight: 800; margin-top: 3px;"><i class="fa-solid fa-ban"></i> ${removedToppings}</div>` : ''}
+              </div>
+            `;
+          }).join('');
+
+          const addonsList = Object.entries(order.sideAddons || {})
+            .filter(([_, qty]) => qty > 0)
+            .map(([name, qty]) => `${qty}x ${name}`)
+            .join(', ');
+
+          const noteHtml = order.instructions 
+            ? `<div class="ticket-note-box"><strong><i class="fa-solid fa-note-sticky"></i> Note:</strong> ${order.instructions}</div>` 
+            : '';
+
+          let actionButtons = '';
+          if (order.status === 'Preparing') {
+            actionButtons = `<button class="action-btn btn-ready" onclick="updateOrderStatus('${order.id}', 'Ready')"><i class="fa-solid fa-bell-concierge"></i> Mark Ready</button>`;
+          } else if (order.status === 'Ready') {
+            actionButtons = `<button class="action-btn btn-complete" onclick="updateOrderStatus('${order.id}', 'Completed')"><i class="fa-solid fa-check-double"></i> Complete Order</button>`;
+          }
+
+          return `
+            <div class="ticket-card ${statusClass}">
+              <div>
+                <div class="ticket-header">
+                  <div>
+                    <strong class="serif" style="font-size: 1.2rem; color: var(--maroon);">#${order.orderNumber}</strong>
+                    <span style="font-size: 0.78rem; color: #777; margin-left: 8px;">${order.time}</span>
+                  </div>
+                  <span class="status-badge ${badgeClass}">${order.status}</span>
+                </div>
+
+                <div style="margin-top: 12px;">
+                  ${itemsHtml}
+                  ${addonsList ? `<div style="font-size: 0.85rem; padding: 6px 10px; background: #FDF7EE; border-radius: 6px; border: 1px solid #E6DDD0;"><strong>Sides:</strong> ${addonsList}</div>` : ''}
+                  ${noteHtml}
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-weight: 800; margin-bottom: 10px; padding-top: 8px; border-top: 1px dashed var(--border);">
+                  <span>Total Paid:</span>
+                  <span style="color: var(--maroon);">₱${order.totalBill}</span>
+                </div>
+                <div class="ticket-actions">
+                  ${actionButtons}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      const stockGrid = document.getElementById('stockCategoriesGrid');
+      stockGrid.innerHTML = Object.entries(defaultStock).map(([category, items]) => {
+        const rows = items.map(item => {
+          const isOut = soldOut.includes(item);
+          return `
+            <div class="stock-row">
+              <span style="${isOut ? 'text-decoration: line-through; color: #999;' : ''}">${item}</span>
+              <button class="stock-toggle-btn ${isOut ? 'sold-out' : 'in-stock'}" onclick="toggleStockItem('${item}')">
+                ${isOut ? 'SOLD OUT' : 'IN STOCK'}
+              </button>
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div class="stock-category-card">
+            <h3 class="serif">${category}</h3>
+            ${rows}
+          </div>
+        `;
+      }).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (sessionStorage.getItem('myRamenAdminUnlocked') === 'true') {
+        document.getElementById('pinOverlay').style.display = 'none';
+      }
+      renderAdminDashboard();
+    });
+  </script>
+</body>
+</html>

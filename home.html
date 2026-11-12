@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Browse MyRamen signature recipes or build your custom ramen bowl.">
   <title>Menu Catalog | MyRamen</title>
+  <link rel="icon" type="image/png" href="img/logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
   <style>
-    /* Cart Badge */
     .cart-btn-wrapper {
       position: relative;
       display: inline-flex;
@@ -32,7 +32,6 @@
       display: none;
     }
 
-    /* Floating Toast Modal when item is added */
     .cart-toast {
       position: fixed;
       bottom: 24px;
@@ -51,13 +50,8 @@
       transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       white-space: nowrap;
     }
-    .cart-toast.show {
-      transform: translateX(-50%) translateY(0);
-    }
-    .toast-actions {
-      display: flex;
-      gap: 8px;
-    }
+    .cart-toast.show { transform: translateX(-50%) translateY(0); }
+    .toast-actions { display: flex; gap: 8px; }
     .toast-btn {
       padding: 6px 14px;
       border-radius: 6px;
@@ -67,17 +61,9 @@
       text-decoration: none;
       border: none;
     }
-    .toast-btn-outline {
-      background: transparent;
-      color: #F8E7D1;
-      border: 1px solid rgba(255,255,255,0.4);
-    }
-    .toast-btn-primary {
-      background: var(--cream);
-      color: var(--maroon);
-    }
+    .toast-btn-outline { background: transparent; color: #F8E7D1; border: 1px solid rgba(255,255,255,0.4); }
+    .toast-btn-primary { background: var(--cream); color: var(--maroon); }
 
-    /* Card Image Container for Real Photos */
     .catalog-card-img {
       background: #F4EFE6;
       border-radius: 8px;
@@ -87,6 +73,7 @@
       height: 125px;
       margin-bottom: 10px;
       overflow: hidden;
+      position: relative;
     }
 
     .catalog-card-img img {
@@ -98,8 +85,24 @@
       transition: transform 0.3s ease;
     }
 
-    .catalog-card:hover .catalog-card-img img {
-      transform: scale(1.06);
+    .catalog-card:hover .catalog-card-img img { transform: scale(1.06); }
+
+    /* Sold Out Card State */
+    .catalog-card.is-sold-out {
+      opacity: 0.55;
+      pointer-events: none;
+      filter: grayscale(80%);
+    }
+    .sold-out-ribbon {
+      position: absolute;
+      background: #B91C1C;
+      color: white;
+      font-size: 0.78rem;
+      font-weight: 900;
+      padding: 4px 12px;
+      border-radius: 4px;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
     }
   </style>
 </head>
@@ -107,7 +110,7 @@
 
   <div class="kiosk-container">
 
-    <!-- Toast Alert for Add to Cart -->
+    <!-- Toast Alert -->
     <div class="cart-toast" id="cartToast">
       <div>
         <i class="fa-solid fa-circle-check" style="color: #4ADE80; margin-right: 6px;"></i>
@@ -128,11 +131,16 @@
         <span class="nav-logo serif" style="font-size: 1.5rem;">MYRAMEN</span>
         <i class="fa-solid fa-xmark" id="closeDrawerBtn" style="font-size: 1.4rem; cursor: pointer;"></i>
       </div>
-      <ul class="drawer-nav">
+      <ul class="drawer-nav" style="flex: 1;">
         <li><a href="index.html"><i class="fa-solid fa-power-off"></i> Welcome Screen</a></li>
         <li><a href="home.html"><i class="fa-solid fa-utensils"></i> Full Menu Catalog</a></li>
         <li><a href="customize.html"><i class="fa-solid fa-wand-magic-sparkles"></i> Create Custom Ramen</a></li>
         <li><a href="summary.html"><i class="fa-solid fa-cart-shopping"></i> View Cart & Checkout</a></li>
+        <li style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 14px;">
+          <a href="admin.html" style="color: #D9A036; font-weight: 700;">
+            <i class="fa-solid fa-user-shield"></i> Admin / Kitchen
+          </a>
+        </li>
       </ul>
     </aside>
 
@@ -157,7 +165,7 @@
     </header>
 
     <main class="home-content">
-      <!-- Peeking Ramen Banner (Retained) -->
+      <!-- Peeking Ramen Banner -->
       <div class="peeking-ramen-strip">
         <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1200&q=80" 
              alt="Fresh ramen banner" 
@@ -183,7 +191,7 @@
           </a>
 
           <!-- 2. Tonkotsu -->
-          <div class="catalog-card" onclick="addPresetToCart('Tonkotsu', 150)">
+          <div class="catalog-card" data-ramen-name="Tonkotsu" onclick="addPresetToCart('Tonkotsu', 150)">
             <div class="catalog-card-img">
               <img src="img/tonkotsu.png" alt="Tonkotsu Ramen">
             </div>
@@ -196,7 +204,7 @@
           </div>
 
           <!-- 3. Shoyu -->
-          <div class="catalog-card" onclick="addPresetToCart('Shoyu', 150)">
+          <div class="catalog-card" data-ramen-name="Shoyu" onclick="addPresetToCart('Shoyu', 150)">
             <div class="catalog-card-img">
               <img src="img/shoyu.png" alt="Shoyu Ramen">
             </div>
@@ -209,7 +217,7 @@
           </div>
 
           <!-- 4. Miso -->
-          <div class="catalog-card" onclick="addPresetToCart('Miso', 150)">
+          <div class="catalog-card" data-ramen-name="Miso" onclick="addPresetToCart('Miso', 150)">
             <div class="catalog-card-img">
               <img src="img/miso.png" alt="Miso Ramen">
             </div>
@@ -222,7 +230,7 @@
           </div>
 
           <!-- 5. Shio -->
-          <div class="catalog-card" onclick="addPresetToCart('Shio', 150)">
+          <div class="catalog-card" data-ramen-name="Shio" onclick="addPresetToCart('Shio', 150)">
             <div class="catalog-card-img">
               <img src="img/shio.png" alt="Shio Ramen">
             </div>
@@ -241,7 +249,6 @@
 
   <script src="js/transitions.js"></script>
   <script>
-    // Drawer handlers
     const drawer = document.getElementById('sideDrawer');
     const backdrop = document.getElementById('drawerBackdrop');
     const openBtn = document.getElementById('openDrawerBtn');
@@ -253,7 +260,6 @@
     closeBtn.addEventListener('click', closeMenu);
     backdrop.addEventListener('click', closeMenu);
 
-    // Search
     const searchInput = document.getElementById('catalogSearch');
     const clearBtn = document.getElementById('clearSearchBtn');
     searchInput.addEventListener('input', (e) => {
@@ -269,13 +275,8 @@
       searchInput.focus();
     });
 
-    // Cart Helper Functions
     function getCart() {
-      try {
-        return JSON.parse(localStorage.getItem('myRamenCart')) || [];
-      } catch (e) {
-        return [];
-      }
+      try { return JSON.parse(localStorage.getItem('myRamenCart')) || []; } catch (e) { return []; }
     }
 
     function saveCart(cart) {
@@ -295,6 +296,26 @@
       }
     }
 
+    // Check Admin Sold-Out Settings
+    function applySoldOutStatus() {
+      let soldOut = [];
+      try { soldOut = JSON.parse(localStorage.getItem('myRamenSoldOut')) || []; } catch (e) {}
+
+      document.querySelectorAll('.catalog-card[data-ramen-name]').forEach(card => {
+        const name = card.getAttribute('data-ramen-name');
+        if (soldOut.includes(name)) {
+          card.classList.add('is-sold-out');
+          const imgBox = card.querySelector('.catalog-card-img');
+          if (imgBox && !imgBox.querySelector('.sold-out-ribbon')) {
+            const ribbon = document.createElement('div');
+            ribbon.className = 'sold-out-ribbon';
+            ribbon.innerText = 'SOLD OUT';
+            imgBox.appendChild(ribbon);
+          }
+        }
+      });
+    }
+
     let toastTimer;
     function showToast(name) {
       const toast = document.getElementById('cartToast');
@@ -308,7 +329,6 @@
       document.getElementById('cartToast').classList.remove('show');
     }
 
-    // Add preset bowl to multi-item cart
     function addPresetToCart(name, price) {
       const cart = getCart();
       const existing = cart.find(i => i.isPreset && i.name === name);
@@ -324,7 +344,6 @@
           noodleVar: 'Ramen',
           noodleType: 'Standard',
           toppings: ['Chashu', 'Egg', 'Nori', 'Scallions'],
-          addons: ['Fried Tofu'],
           price: price,
           quantity: 1
         });
@@ -333,7 +352,10 @@
       showToast(name + ' Ramen');
     }
 
-    document.addEventListener('DOMContentLoaded', updateCartBadge);
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCartBadge();
+      applySoldOutStatus();
+    });
   </script>
 </body>
 </html>

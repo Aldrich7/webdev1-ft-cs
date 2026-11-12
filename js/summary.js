@@ -6,9 +6,20 @@ let sideAddons = {
   'Siomai': 0,
   'Kimchi': 0
 };
+let customInstructions = '';
+let pendingRemovalIndex = null;
 
-const EXTRA_TOPPING_PRICE = 15; // ₱15 per extra portion of a selected topping
-const ADDON_PRICE = 20;         // ₱20 per side add-on
+const EXTRA_TOPPING_PRICE = 15;
+const ADDON_PRICE = 20;
+const MAX_TOPPING_QTY = 5;
+
+function getSoldOutItems() {
+  try {
+    return JSON.parse(localStorage.getItem('myRamenSoldOut')) || [];
+  } catch (e) {
+    return [];
+  }
+}
 
 function loadCart() {
   try {
@@ -24,28 +35,37 @@ function loadCart() {
         ...savedAddons
       };
     }
+    customInstructions = localStorage.getItem('myRamenInstructions') || '';
   } catch (e) {
     cart = [];
-    sideAddons = {
-      'Fried Tofu': 0,
-      'Mushroom': 0,
-      'Gyoza': 0,
-      'Siomai': 0,
-      'Kimchi': 0
-    };
+    customInstructions = '';
   }
 
-  // Ensure every cart item has a toppingQuantities map initialized
+  // Initialize default topping quantities to 1 (capped at MAX_TOPPING_QTY)
   cart.forEach(item => {
     if (!item.toppingQuantities) {
       item.toppingQuantities = {};
       (item.toppings || []).forEach(top => {
-        item.toppingQuantities[top] = 1; // 1 base portion included
+        item.toppingQuantities[top] = 1;
+      });
+    } else {
+      Object.keys(item.toppingQuantities).forEach(top => {
+        if (item.toppingQuantities[top] > MAX_TOPPING_QTY) {
+          item.toppingQuantities[top] = MAX_TOPPING_QTY;
+        }
       });
     }
   });
 
+  const instrInput = document.getElementById('customInstructionsInput');
+  if (instrInput) instrInput.value = customInstructions;
+
   renderCartUI();
+}
+
+function saveInstructions(val) {
+  customInstructions = val;
+  localStorage.setItem('myRamenInstructions', customInstructions);
 }
 
 function saveCartState() {
@@ -57,6 +77,7 @@ function saveCartState() {
 function renderCartUI() {
   const container = document.getElementById('cartItemsList');
   const checkoutBtn = document.getElementById('orderSubmitBtn');
+  const soldOut = getSoldOutItems();
 
   if (!container) return;
 
@@ -87,12 +108,11 @@ function renderCartUI() {
         ? `Broth: Signature ${item.soup} • Noodles: Standard Ramen`
         : `Broth: ${item.richness} ${item.soup} • Noodles: ${item.noodleType} ${item.noodleVar}`;
 
-      // Calculate extra toppings cost for 1 bowl of this item (anything above 1 base portion is +₱15)
       let extraToppingsCostPerBowl = 0;
       const toppingKeys = Object.keys(item.toppingQuantities || {});
       
       toppingKeys.forEach(top => {
-        const qty = item.toppingQuantities[top] || 1;
+        const qty = item.toppingQuantities[top] ?? 1;
         if (qty > 1) {
           extraToppingsCostPerBowl += (qty - 1) * EXTRA_TOPPING_PRICE;
         }
@@ -102,22 +122,34 @@ function renderCartUI() {
       const singleBowlTotal = (item.price || 150) + extraToppingsCostPerBowl;
       const itemTotal = singleBowlTotal * bowlQty;
 
-      // Render individual topping rows with + / - buttons (Soup & Noodles excluded)
       let toppingsHTML = '';
       if (toppingKeys.length > 0) {
         toppingsHTML = `
           <div class="toppings-adjust-box">
-            <div class="toppings-adjust-label">Included Toppings (Add extra +₱${EXTRA_TOPPING_PRICE} each)</div>
+            <div class="toppings-adjust-label">Included Toppings (Max of ${MAX_TOPPING_QTY} per toppings • Extra +₱${EXTRA_TOPPING_PRICE} each)</div>
             ${toppingKeys.map(top => {
-              const tQty = item.toppingQuantities[top] || 1;
-              const extraTag = tQty > 1 ? `<span style="color: var(--maroon); font-size: 0.78rem; margin-left: 6px;">(+₱${(tQty - 1) * EXTRA_TOPPING_PRICE})</span>` : '';
+              const tQty = item.toppingQuantities[top] ?? 1;
+              const isMax = tQty >= MAX_TOPPING_QTY;
+              let statusBadge = '';
+              let labelStyle = '';
+
+              if (tQty === 0) {
+                statusBadge = `<span style="color: #b91c1c; font-size: 0.78rem; margin-left: 6px; font-weight: 700;">(Removed)</span>`;
+                labelStyle = 'text-decoration: line-through; color: #999;';
+              } else if (tQty > 1) {
+                const maxText = isMax ? ' • Max' : '';
+                statusBadge = `<span style="color: var(--maroon); font-size: 0.78rem; margin-left: 6px;">(+₱${(tQty - 1) * EXTRA_TOPPING_PRICE}${maxText})</span>`;
+              }
+
+              const plusBtnStyle = isMax ? 'opacity: 0.4; cursor: not-allowed;' : '';
+
               return `
                 <div class="topping-row-item">
-                  <span>${top} ${extraTag}</span>
+                  <span><span style="${labelStyle}">${top}</span> ${statusBadge}</span>
                   <div class="mini-qty-controls">
-                    <button class="mini-qty-btn" onclick="changeToppingQty(${idx}, '${top}', -1)" title="Decrease ${top}">-</button>
-                    <span style="min-width: 18px; text-align: center;">${tQty}</span>
-                    <button class="mini-qty-btn" onclick="changeToppingQty(${idx}, '${top}', 1)" title="Add extra ${top}">+</button>
+                    <button class="mini-qty-btn" onclick="changeToppingQty(${idx}, '${top}', -1)">-</button>
+                    <span style="min-width: 18px; text-align: center; ${tQty === 0 ? 'color: #b91c1c;' : ''}">${tQty}</span>
+                    <button class="mini-qty-btn" style="${plusBtnStyle}" ${isMax ? 'disabled' : ''} onclick="changeToppingQty(${idx}, '${top}', 1)">+</button>
                   </div>
                 </div>
               `;
@@ -139,7 +171,7 @@ function renderCartUI() {
           ${toppingsHTML}
 
           <div class="cart-item-controls">
-            <button class="remove-btn" onclick="removeItem(${idx})">
+            <button class="remove-btn" onclick="promptRemoveBowl(${idx})">
               <i class="fa-solid fa-trash-can"></i> Remove Bowl
             </button>
             <div class="qty-controls">
@@ -154,7 +186,7 @@ function renderCartUI() {
     }).join('');
   }
 
-  // Sync all Side Add-ons UI
+  // Sync Side Add-ons & Respect Sold Out Status
   const addonConfig = [
     { name: 'Fried Tofu', chipId: 'addonTofu', qtyId: 'qtyAddonTofu' },
     { name: 'Mushroom', chipId: 'addonMushroom', qtyId: 'qtyAddonMushroom' },
@@ -166,17 +198,29 @@ function renderCartUI() {
   let totalAddonsQty = 0;
 
   addonConfig.forEach(addon => {
+    const isSoldOut = soldOut.includes(addon.name);
+    if (isSoldOut) sideAddons[addon.name] = 0;
+
     const qty = sideAddons[addon.name] || 0;
     totalAddonsQty += qty;
 
     const chipEl = document.getElementById(addon.chipId);
     const qtyEl = document.getElementById(addon.qtyId);
 
-    if (chipEl) chipEl.classList.toggle('selected', qty > 0);
-    if (qtyEl) qtyEl.innerText = qty;
+    if (chipEl) {
+      chipEl.classList.toggle('selected', qty > 0);
+      if (isSoldOut) {
+        chipEl.style.opacity = '0.45';
+        chipEl.style.pointerEvents = 'none';
+      } else {
+        chipEl.style.opacity = '1';
+        chipEl.style.pointerEvents = 'auto';
+      }
+    }
+    if (qtyEl) qtyEl.innerText = isSoldOut ? 'OUT' : qty;
   });
 
-  // Calculate Grand Totals
+  // Calculate Totals
   let totalBowls = 0;
   let baseBowlsCost = 0;
   let totalExtraToppingsCost = 0;
@@ -203,26 +247,23 @@ function renderCartUI() {
   document.getElementById('billTotal').innerText = grandTotal;
 }
 
-// Adjust individual topping quantity (minimum 1 base portion, unlimited extras)
+// Allow reducing a topping to 0 or increasing up to MAX_TOPPING_QTY (5)
 function changeToppingQty(cartIndex, toppingName, delta) {
   const item = cart[cartIndex];
   if (!item || !item.toppingQuantities) return;
-
-  const current = item.toppingQuantities[toppingName] || 1;
+  const current = item.toppingQuantities[toppingName] ?? 1;
   const updated = current + delta;
-
-  if (updated >= 1) {
+  if (updated >= 0 && updated <= MAX_TOPPING_QTY) {
     item.toppingQuantities[toppingName] = updated;
     saveCartState();
   }
 }
 
-// Adjust whole bowl quantity
 function modifyQty(index, delta) {
   if (cart[index]) {
     const newQty = (cart[index].quantity || 1) + delta;
     if (newQty <= 0) {
-      removeItem(index);
+      promptRemoveBowl(index);
     } else {
       cart[index].quantity = newQty;
       saveCartState();
@@ -230,33 +271,74 @@ function modifyQty(index, delta) {
   }
 }
 
-function removeItem(index) {
-  cart.splice(index, 1);
-  saveCartState();
+function promptRemoveBowl(index) {
+  const item = cart[index];
+  if (!item) return;
+
+  pendingRemovalIndex = index;
+  const title = item.isPreset ? `${item.name} Ramen` : `Custom ${item.soup} Ramen`;
+  document.getElementById('confirmBowlName').innerText = title;
+  document.getElementById('removeConfirmModal').classList.add('active');
 }
 
-// Toggle Side Add-on when clicking the main chip body
-function toggleAddon(name) {
-  if ((sideAddons[name] || 0) > 0) {
-    sideAddons[name] = 0;
-  } else {
-    sideAddons[name] = 1;
+function closeRemoveModal() {
+  pendingRemovalIndex = null;
+  document.getElementById('removeConfirmModal').classList.remove('active');
+}
+
+function confirmRemoveBowl() {
+  if (pendingRemovalIndex !== null) {
+    cart.splice(pendingRemovalIndex, 1);
+    pendingRemovalIndex = null;
+    saveCartState();
   }
+  closeRemoveModal();
+}
+
+function toggleAddon(name) {
+  if (getSoldOutItems().includes(name)) return;
+  sideAddons[name] = (sideAddons[name] || 0) > 0 ? 0 : 1;
   saveCartState();
 }
 
-// Adjust Side Add-on quantity using +/- buttons
 function changeAddonQty(name, delta) {
-  const current = sideAddons[name] || 0;
-  const updated = Math.max(0, current + delta);
-  sideAddons[name] = updated;
+  if (getSoldOutItems().includes(name)) return;
+  sideAddons[name] = Math.max(0, (sideAddons[name] || 0) + delta);
   saveCartState();
 }
 
 function checkoutOrder() {
   if (cart.length === 0) return;
+
+  let queue = [];
+  try {
+    queue = JSON.parse(localStorage.getItem('myRamenOrdersQueue')) || [];
+  } catch (e) {
+    queue = [];
+  }
+
+  const grandTotal = parseInt(document.getElementById('billTotal').innerText, 10) || 0;
+  const orderNumber = 101 + queue.length;
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  queue.push({
+    id: 'ord_' + Date.now(),
+    orderNumber: orderNumber,
+    time: timeStr,
+    status: 'Preparing',
+    items: [...cart],
+    sideAddons: { ...sideAddons },
+    instructions: customInstructions.trim(),
+    totalBill: grandTotal
+  });
+
+  localStorage.setItem('myRamenOrdersQueue', JSON.stringify(queue));
+
   localStorage.removeItem('myRamenCart');
   localStorage.removeItem('myRamenSideAddons');
+  localStorage.removeItem('myRamenInstructions');
+
   document.body.classList.add('page-exit');
   setTimeout(() => {
     window.location.href = 'status.html';

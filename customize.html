@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Customize your broth, noodle texture, and toppings in the interactive kiosk.">
   <title>Ramen Customizer | MyRamen</title>
+  <link rel="icon" type="image/png" href="img/logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
   <style>
-    /* Lock viewport and apply outer maroon kiosk frame */
+
     html, body {
       height: 100vh;
       width: 100vw;
@@ -40,7 +41,6 @@
       position: relative;
     }
 
-    /* ==================== LEFT COLUMN (Logo + Tall Panel) ==================== */
     .left-column {
       width: 220px;
       flex-shrink: 0;
@@ -145,7 +145,6 @@
       color: #F8E7D1;
     }
 
-    /* ==================== RIGHT COLUMN (Maroon Frame Stage + Bottom Row) ==================== */
     .right-column {
       flex: 1;
       display: flex;
@@ -155,7 +154,6 @@
       overflow: hidden;
     }
 
-    /* Rounded Maroon Frame around Wooden Table Stage */
     .stage-maroon-frame {
       flex: 1;
       background-color: var(--maroon);
@@ -167,7 +165,6 @@
       position: relative;
     }
 
-    /* Top utility icons floating discreetly inside top-right of frame */
     .stage-top-controls {
       position: absolute;
       top: 24px;
@@ -213,7 +210,6 @@
       justify-content: center;
     }
 
-    /* Wooden Table Inner Stage */
     .wooden-stage {
       flex: 1;
       background: radial-gradient(circle at center, #5E3622 0%, #3D2012 70%, #261209 100%);
@@ -225,7 +221,6 @@
       box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
     }
 
-    /* Wood Grain Lines */
     .wooden-stage::before {
       content: '';
       position: absolute;
@@ -240,7 +235,6 @@
       pointer-events: none;
     }
 
-    /* Step Indicator Pill inside Stage Top-Left */
     .step-indicator-badge {
       position: absolute;
       top: 12px;
@@ -256,7 +250,6 @@
       z-index: 10;
     }
 
-    /* Keep existing interactive bowl CSS intact */
     .table-setting {
       position: relative;
       display: flex;
@@ -355,7 +348,6 @@
     .topping-menma { background: #D8B26E; color: #4A3311; border: 1px solid #8F6927; }
     .topping-greens { background: #3B7A39; color: white; border: 1px solid #235222; }
 
-    /* Rounded Cream NEXT & BACK Buttons Inside Stage Bottom Corners */
     .stage-pill-btn {
       position: absolute;
       bottom: 16px;
@@ -404,7 +396,6 @@
       color: white;
     }
 
-    /* ==================== BOTTOM CARDS ROW (Underneath Stage) ==================== */
     .bottom-cards-row {
       height: 112px;
       min-height: 112px;
@@ -434,7 +425,6 @@
       background-color: #E5E0D6;
     }
 
-    /* Circular Right Arrow Button matching mockup */
     .circle-arrow-btn {
       width: 36px;
       height: 36px;
@@ -456,7 +446,7 @@
       color: white;
     }
 
-    /* Responsive adjustments for smaller/portrait screens */
+    /* Responsive screen */
     @media (max-width: 780px) {
       .kiosk-outer-frame {
         padding: 8px;

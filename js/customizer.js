@@ -46,7 +46,6 @@ let order = {
   noodleVar: "Ramen",
   noodleType: "Firm",
   toppings: ["Egg", "Naruto", "Nori", "Chashu"],
-  addons: ["Fried Tofu"],
   price: 150
 };
 
@@ -75,6 +74,14 @@ const plateCoordinates = [
   { top: "66%", left: "34%" }
 ];
 
+function getSoldOutItems() {
+  try {
+    return JSON.parse(localStorage.getItem("myRamenSoldOut")) || [];
+  } catch (e) {
+    return [];
+  }
+}
+
 function updateCartBadge() {
   const badge = document.getElementById("customizerCartBadge");
   if (!badge) return;
@@ -101,13 +108,20 @@ function renderStep() {
   const stepLabel = document.getElementById("stepProgressLabel");
   const nextBtn = document.getElementById("builderNextBtn");
   const addMoreBtn = document.getElementById("builderAddMoreBtn");
+  const soldOut = getSoldOutItems();
+
+  // Remove any sold-out default toppings/broths automatically
+  order.toppings = order.toppings.filter(t => !soldOut.includes(t));
+  if (soldOut.includes(order.soup)) {
+    const availableSoup = steps[0].options.find(s => !soldOut.includes(s));
+    if (availableSoup) order.soup = availableSoup;
+  }
 
   sideTitle.innerHTML = step.title;
   if (stepLabel) stepLabel.innerText = step.label;
   sideOptions.innerHTML = "";
   bottomBar.innerHTML = "";
 
-  // Final step button labels
   if (currentStep === steps.length - 1) {
     nextBtn.innerText = "CHECKOUT";
     addMoreBtn.style.display = "inline-block";
@@ -116,26 +130,33 @@ function renderStep() {
     addMoreBtn.style.display = "none";
   }
 
-  // Step 1: Broth in Left Tall Panel
+  // Step 1: Broth
   if (step.layout === "vertical") {
     sidebar.classList.remove("centered-mode");
     sideOptions.style.display = "flex";
     bottomBar.style.display = "none";
     
     step.options.forEach(opt => {
+      const isOut = soldOut.includes(opt);
       const btn = document.createElement("div");
-      btn.className = `side-option-tile ${order.soup === opt ? "selected" : ""}`;
-      btn.innerText = opt;
-      btn.onclick = () => {
-        order.soup = opt;
-        sideOptions.querySelectorAll(".side-option-tile").forEach(el => el.classList.remove("selected"));
-        btn.classList.add("selected");
-        updateVisualBowls();
-      };
+      btn.className = `side-option-tile ${order.soup === opt && !isOut ? "selected" : ""}`;
+      btn.innerHTML = isOut ? `<span style="text-decoration:line-through;opacity:0.5;">${opt}</span> <small style="color:#b91c1c;margin-left:6px;font-size:0.7rem;">(OUT)</small>` : opt;
+
+      if (isOut) {
+        btn.style.cursor = "not-allowed";
+        btn.style.background = "#e9e4dc";
+      } else {
+        btn.onclick = () => {
+          order.soup = opt;
+          sideOptions.querySelectorAll(".side-option-tile").forEach(el => el.classList.remove("selected"));
+          btn.classList.add("selected");
+          updateVisualBowls();
+        };
+      }
       sideOptions.appendChild(btn);
     });
   } 
-  // Steps 2-4: Left Panel becomes centered title, Options appear in Bottom Cards Row
+  // Steps 2-4: Horizontal Bottom Options
   else if (step.layout === "horizontal") {
     sidebar.classList.add("centered-mode");
     sideOptions.style.display = "none";
@@ -161,25 +182,37 @@ function renderStep() {
     arrow.onclick = nextStep;
     bottomBar.appendChild(arrow);
   } 
-  // Step 5: Toppings in both Left Panel and Bottom Cards Row
+  // Step 5: Toppings
   else if (step.layout === "mixed") {
     sidebar.classList.remove("centered-mode");
     sideOptions.style.display = "flex";
     bottomBar.style.display = "flex";
 
     step.sideOptions.forEach(opt => {
+      const isOut = soldOut.includes(opt);
       const btn = document.createElement("div");
-      btn.className = `side-option-tile ${order.toppings.includes(opt) ? "selected" : ""}`;
-      btn.innerText = opt;
-      btn.onclick = () => { toggleTopping(opt); };
+      btn.className = `side-option-tile ${order.toppings.includes(opt) && !isOut ? "selected" : ""}`;
+      btn.innerHTML = isOut ? `<span style="text-decoration:line-through;opacity:0.5;">${opt}</span>` : opt;
+      if (isOut) {
+        btn.style.cursor = "not-allowed";
+        btn.style.background = "#e9e4dc";
+      } else {
+        btn.onclick = () => { toggleTopping(opt); };
+      }
       sideOptions.appendChild(btn);
     });
 
     step.bottomOptions.forEach(opt => {
+      const isOut = soldOut.includes(opt);
       const card = document.createElement("div");
-      card.className = `bottom-option-card ${order.toppings.includes(opt) ? "selected" : ""}`;
-      card.innerText = opt;
-      card.onclick = () => { toggleTopping(opt); };
+      card.className = `bottom-option-card ${order.toppings.includes(opt) && !isOut ? "selected" : ""}`;
+      card.innerHTML = isOut ? `<span style="text-decoration:line-through;opacity:0.5;">${opt}</span>` : opt;
+      if (isOut) {
+        card.style.cursor = "not-allowed";
+        card.style.background = "#e9e4dc";
+      } else {
+        card.onclick = () => { toggleTopping(opt); };
+      }
       bottomBar.appendChild(card);
     });
 
@@ -246,7 +279,6 @@ function saveCurrentCustomToCart() {
     noodleVar: order.noodleVar,
     noodleType: order.noodleType,
     toppings: [...order.toppings],
-    addons: [...order.addons],
     price: 150,
     quantity: 1
   });

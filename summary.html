@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Review your personalized ramen bill and checkout.">
   <title>Order Summary | MyRamen</title>
+  <link rel="icon" type="image/png" href="img/logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
   <style>
@@ -39,7 +40,7 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
-      max-height: 48vh;
+      max-height: 44vh;
       overflow-y: auto;
       padding-right: 4px;
     }
@@ -76,7 +77,7 @@
       margin-top: 2px;
     }
 
-    /* Individual Toppings Breakdown with +/- Counters */
+    /* Toppings */
     .toppings-adjust-box {
       background-color: #FAF7F2;
       border: 1px solid #E6DDD0;
@@ -154,7 +155,7 @@
       text-decoration: underline;
     }
 
-    /* Interactive Side Add-ons Grid */
+    /* Side Add-ons */
     .addon-chips {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
@@ -192,6 +193,34 @@
       color: var(--maroon);
     }
 
+    /* Custom Instructions */
+    .instructions-section {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .instructions-textarea {
+      width: 100%;
+      min-height: 68px;
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: var(--text);
+      resize: vertical;
+      outline: none;
+      user-select: text;
+      transition: border-color 0.2s ease;
+    }
+
+    .instructions-textarea:focus {
+      border-color: var(--maroon);
+    }
+
     .empty-cart-state {
       text-align: center;
       padding: 40px 20px;
@@ -199,9 +228,98 @@
       border-radius: 10px;
       border: 1px dashed var(--border);
     }
+
+    /* ==================== KIOSK CONFIRMATION ==================== */
+    .confirm-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(24, 8, 10, 0.65);
+      backdrop-filter: blur(2px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+      padding: 20px;
+    }
+
+    .confirm-modal-backdrop.active {
+      display: flex;
+      animation: fadeInModal 0.2s ease forwards;
+    }
+
+    @keyframes fadeInModal {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .confirm-modal-box {
+      background: var(--cream);
+      border: 3px solid var(--maroon);
+      border-radius: 14px;
+      padding: 28px 24px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.5);
+      transform: scale(0.95);
+      animation: popModal 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes popModal {
+      to { transform: scale(1); }
+    }
+
+    .confirm-modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .modal-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .modal-btn-cancel {
+      background: white;
+      color: var(--text);
+      border: 2px solid var(--border);
+    }
+    .modal-btn-cancel:hover {
+      background: var(--card-bg);
+    }
+
+    .modal-btn-confirm {
+      background: #b91c1c;
+      color: white;
+      border: 2px solid #991b1b;
+    }
+    .modal-btn-confirm:hover {
+      background: #991b1b;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Custom Kiosk Confirmation Dialog -->
+  <div class="confirm-modal-backdrop" id="removeConfirmModal">
+    <div class="confirm-modal-box">
+      <i class="fa-solid fa-trash-can" style="font-size: 2.4rem; color: #b91c1c; margin-bottom: 12px;"></i>
+      <h3 class="serif" style="color: var(--maroon); font-size: 1.4rem; margin-bottom: 8px;">Remove This Bowl?</h3>
+      <p style="font-size: 0.95rem; color: #555; line-height: 1.4;">
+        Are you sure you want to remove <strong id="confirmBowlName" style="color: var(--text);">this ramen</strong> from your order?
+      </p>
+      <div class="confirm-modal-actions">
+        <button class="modal-btn modal-btn-cancel serif" onclick="closeRemoveModal()">Keep Bowl</button>
+        <button class="modal-btn modal-btn-confirm serif" onclick="confirmRemoveBowl()">Yes, Remove</button>
+      </div>
+    </div>
+  </div>
 
   <div class="kiosk-container">
     <header class="top-nav">
@@ -224,10 +342,10 @@
         </div>
 
         <!-- Global Table Side Add-ons -->
-        <h3 class="serif" style="color: var(--maroon); margin-top: 10px; font-size: 1.15rem;">Side Add-ons</h3>
+        <h3 class="serif" style="color: var(--maroon); margin-top: 6px; font-size: 1.15rem;">Side Add-ons</h3>
         <div class="addon-chips">
           
-          <!-- Fried Tofu (Custom Crispy Tofu Cubes SVG) -->
+          <!-- Fried Tofu -->
           <div class="addon-chip" id="addonTofu" onclick="toggleAddon('Fried Tofu')">
             <div class="addon-info">
               <svg class="addon-svg-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -250,7 +368,7 @@
             </div>
           </div>
 
-          <!-- Mushroom (Custom Shiitake Mushroom SVG) -->
+          <!-- Mushroom -->
           <div class="addon-chip" id="addonMushroom" onclick="toggleAddon('Mushroom')">
             <div class="addon-info">
               <svg class="addon-svg-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -271,7 +389,7 @@
             </div>
           </div>
 
-          <!-- Gyoza (Custom Pleated Dumpling SVG) -->
+          <!-- Gyoza -->
           <div class="addon-chip" id="addonGyoza" onclick="toggleAddon('Gyoza')">
             <div class="addon-info">
               <svg class="addon-svg-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -294,7 +412,7 @@
             </div>
           </div>
 
-          <!-- Siomai (Custom Steamed Dumpling Cup SVG) -->
+          <!-- Siomai -->
           <div class="addon-chip" id="addonSiomai" onclick="toggleAddon('Siomai')">
             <div class="addon-info">
               <svg class="addon-svg-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -316,7 +434,7 @@
             </div>
           </div>
 
-          <!-- Kimchi (Custom Napa Cabbage & Chili Bowl SVG) -->
+          <!-- Kimchi -->
           <div class="addon-chip" id="addonKimchi" onclick="toggleAddon('Kimchi')">
             <div class="addon-info">
               <svg class="addon-svg-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -337,6 +455,17 @@
             </div>
           </div>
 
+        </div>
+
+        <!-- Custom Kitchen Instructions -->
+        <div class="instructions-section">
+          <h3 class="serif" style="color: var(--maroon); font-size: 1.15rem;">Custom Instructions</h3>
+          <textarea 
+            id="customInstructionsInput" 
+            class="instructions-textarea" 
+            placeholder="Add any special requests for the kitchen (e.g., extra spicy, less salt, separate broth, allergies)..."
+            oninput="saveInstructions(this.value)"
+          ></textarea>
         </div>
       </div>
 
