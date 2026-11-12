@@ -16,7 +16,7 @@
       <span class="nav-logo serif">MYRAMEN</span>
     </header>
 
-    <!-- Phase 1: Progress Bar -->
+    <!-- Progress Bar -->
     <div class="center-panel" id="phasePreparing">
       <i class="fa-solid fa-bowl-food" style="font-size: 6rem; color: #F5EFEB; margin-bottom: 20px;"></i>
       <div class="progress-bar">
@@ -25,7 +25,7 @@
       <h2 class="serif" style="font-size: 2.2rem; margin-top: 20px;">Preparing Your Order...</h2>
     </div>
 
-    <!-- Phase 2: Thank You Display -->
+    <!-- Thank You Display -->
     <div class="center-panel" id="phaseThankYou" style="display: none;">
       <div class="welcome-bowl" style="width: 220px; height: 220px; margin-bottom: 24px; border: 10px solid #29292d;">
         <i class="fa-solid fa-check" style="font-size: 5rem; color: #4ADE80;"></i>
@@ -41,13 +41,12 @@
       const fill = document.getElementById('statusProgress');
       setTimeout(() => { fill.style.width = '100%'; }, 100);
 
-      // Transition to Thank You after 3.2 seconds
       setTimeout(() => {
         document.getElementById('phasePreparing').style.display = 'none';
         document.getElementById('phaseThankYou').style.display = 'flex';
       }, 3200);
 
-      // Return to Welcome Page after 6.5 seconds
+      // Return to Welcome Page
       setTimeout(() => {
         document.body.classList.add('page-exit');
         setTimeout(() => {

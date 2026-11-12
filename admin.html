@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
   <style>
-    /* PIN Lock Screen Overlay */
+    /* Lock Screen */
     .pin-overlay {
       position: fixed;
       inset: 0;
@@ -58,7 +58,7 @@
     }
     .pin-btn:hover { background: var(--maroon-dark); }
 
-    /* Top Nav Action Buttons */
+    /* Top Navigation Buttons */
     .admin-nav-actions {
       display: flex;
       align-items: center;
@@ -103,7 +103,7 @@
       gap: 20px;
     }
 
-    /* Top Stats Cards */
+    /* Top Status Cards */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
@@ -308,7 +308,7 @@
   </div>
 
   <div class="kiosk-container">
-    <!-- Top Nav -->
+    <!-- Top Navigation -->
     <header class="top-nav">
       <div class="nav-left">
         <span class="nav-logo serif">MYRAMEN <span style="font-size: 0.9rem; background: #D9A036; color: #1e0609; padding: 3px 10px; border-radius: 12px; vertical-align: middle; margin-left: 6px;">ADMIN</span></span>
@@ -324,7 +324,7 @@
     </header>
 
     <main class="admin-main">
-      <!-- Live Metrics Overview -->
+      <!-- Live Overview -->
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-label">Active Kitchen Orders</div>
@@ -357,14 +357,14 @@
         </button>
       </div>
 
-      <!-- TAB 1: KITCHEN QUEUE -->
+      <!-- KITCHEN QUEUE -->
       <section id="queueTab" class="tab-section active">
         <div class="tickets-grid" id="kitchenTicketsGrid">
           <!-- Populated dynamically -->
         </div>
       </section>
 
-      <!-- TAB 2: INVENTORY / SOLD OUT TOGGLES -->
+      <!-- INVENTORY / SOLD OUT -->
       <section id="stockTab" class="tab-section">
         <p style="font-size: 0.9rem; color: #665; margin-bottom: 16px;">
           Toggle items as <strong>Sold Out</strong> to immediately disable them on the customer ordering screens.

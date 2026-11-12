@@ -247,7 +247,7 @@ function renderCartUI() {
   document.getElementById('billTotal').innerText = grandTotal;
 }
 
-// Allow reducing a topping to 0 or increasing up to MAX_TOPPING_QTY (5)
+// Allow reducing a topping or increasing
 function changeToppingQty(cartIndex, toppingName, delta) {
   const item = cart[cartIndex];
   if (!item || !item.toppingQuantities) return;

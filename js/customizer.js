@@ -110,7 +110,7 @@ function renderStep() {
   const addMoreBtn = document.getElementById("builderAddMoreBtn");
   const soldOut = getSoldOutItems();
 
-  // Remove any sold-out default toppings/broths automatically
+  // For removing any sold-out default toppings/broths automatically
   order.toppings = order.toppings.filter(t => !soldOut.includes(t));
   if (soldOut.includes(order.soup)) {
     const availableSoup = steps[0].options.find(s => !soldOut.includes(s));
@@ -130,7 +130,7 @@ function renderStep() {
     addMoreBtn.style.display = "none";
   }
 
-  // Step 1: Broth
+  // Broth
   if (step.layout === "vertical") {
     sidebar.classList.remove("centered-mode");
     sideOptions.style.display = "flex";
@@ -156,7 +156,7 @@ function renderStep() {
       sideOptions.appendChild(btn);
     });
   } 
-  // Steps 2-4: Horizontal Bottom Options
+  // Horizontal Bottom Options
   else if (step.layout === "horizontal") {
     sidebar.classList.add("centered-mode");
     sideOptions.style.display = "none";
@@ -182,7 +182,7 @@ function renderStep() {
     arrow.onclick = nextStep;
     bottomBar.appendChild(arrow);
   } 
-  // Step 5: Toppings
+  // Toppings
   else if (step.layout === "mixed") {
     sidebar.classList.remove("centered-mode");
     sideOptions.style.display = "flex";

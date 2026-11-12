@@ -62,7 +62,6 @@ body.page-exit {
   font-family: Georgia, serif;
 }
 
-/* Fluid Responsive Container */
 .kiosk-container {
   width: 100%;
   min-height: 100vh;
@@ -72,7 +71,7 @@ body.page-exit {
   flex-direction: column;
 }
 
-/* ==================== COMMON TOP NAVIGATION ==================== */
+/* ==================== TOP NAVIGATION ==================== */
 .top-nav {
   background-color: var(--maroon);
   color: white;
@@ -139,7 +138,7 @@ body.page-exit {
   opacity: 0.8;
 }
 
-/* ==================== PAGE 1: WELCOME SCREEN ==================== */
+/* ==================== WELCOME SCREEN ==================== */
 .welcome-container {
   width: 100%;
   min-height: 100vh;
@@ -326,7 +325,7 @@ body.page-exit {
   transform: translateX(8px);
 }
 
-/* ==================== PAGE 2: HOME CATALOG ==================== */
+/* ==================== HOME / MENU ==================== */
 .side-drawer {
   position: fixed;
   top: 0;
@@ -536,7 +535,7 @@ body.page-exit {
   flex-shrink: 0;
 }
 
-/* ==================== PAGE 3: CUSTOMIZER ==================== */
+/* ==================== CUSTOMIZER ==================== */
 .step-tracker-bar {
   background-color: var(--card-bg);
   border-bottom: 2px solid var(--border);
@@ -877,7 +876,7 @@ body.page-exit {
   cursor: pointer;
 }
 
-/* ==================== PAGE 4: ORDER SUMMARY ==================== */
+/* ==================== ORDER SUMMARY ==================== */
 .summary-layout {
   flex: 1;
   display: flex;
@@ -1004,7 +1003,7 @@ body.page-exit {
   background: #FFFFFF;
 }
 
-/* ==================== PAGE 5: STATUS ==================== */
+/* ==================== STATUS ==================== */
 .center-panel {
   flex: 1;
   background-color: var(--maroon);
@@ -1035,7 +1034,7 @@ body.page-exit {
   transition: width 3s linear;
 }
 
-/* ==================== RESPONSIVE BREAKPOINTS ==================== */
+/* ==================== RESPONSIVE ==================== */
 @media (max-width: 860px) {
   .welcome-body {
     flex-direction: column;

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Browse MyRamen signature recipes or build your custom ramen bowl.">
-  <title>Menu Catalog | MyRamen</title>
+  <title>Menu | MyRamen</title>
   <link rel="icon" type="image/png" href="img/logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
@@ -182,7 +182,7 @@
 </head>
 <body>
 
-  <!-- Leave Menu Confirmation Modal -->
+  <!-- Leave Menu Confirmation -->
   <div class="confirm-modal-backdrop" id="exitMenuModal">
     <div class="confirm-modal-box">
       <i class="fa-solid fa-right-from-bracket" style="font-size: 2.4rem; color: var(--maroon); margin-bottom: 12px;"></i>
@@ -211,10 +211,8 @@
       </div>
     </div>
 
-    <!-- Backdrop for Drawer -->
     <div class="drawer-backdrop" id="drawerBackdrop"></div>
 
-    <!-- Side Menu Drawer -->
     <aside class="side-drawer" id="sideDrawer">
       <div class="drawer-header">
         <span class="nav-logo serif" style="font-size: 1.5rem;">MYRAMEN</span>
@@ -256,23 +254,23 @@
     </header>
 
     <main class="home-content">
-      <!-- Peeking Ramen Banner -->
+      <!-- Ramen Banner -->
       <div class="peeking-ramen-strip">
         <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1200&q=80" 
              alt="Fresh ramen banner" 
              onerror="this.src='https://images.unsplash.com/photo-1552611052-33e04de081de?auto=format&fit=crop&w=1200&q=80'">
       </div>
 
-      <!-- Banner Strip -->
+      <!-- Banner Text -->
       <div class="hero-strip serif">CHOOSE YOUR RAMEN!</div>
       
       <h2 class="catalog-title serif">Ramens</h2>
 
-      <!-- Catalog Cards -->
+      <!-- Menu Cards -->
       <div class="carousel-wrapper">
         <div class="catalog-carousel" id="carouselList">
           
-          <!-- 1. Custom Ramen Builder Card -->
+          <!-- 1. Custom Ramen -->
           <a href="customize.html" class="catalog-card" style="border: 2px solid var(--maroon);">
             <div class="catalog-card-img" style="background: #EFE6D8;">
               <img src="img/custom.png" alt="Create your own Ramen">
@@ -351,7 +349,7 @@
     closeBtn.addEventListener('click', closeMenu);
     backdrop.addEventListener('click', closeMenu);
 
-    // Exit Confirmation Modal Handlers
+    // Exit Confirmation
     function openExitModal(e) {
       if (e) e.preventDefault();
       closeMenu();
@@ -363,7 +361,7 @@
     }
 
     function confirmExitToStart() {
-      // Clear active customer session items when leaving to Start Screen
+      // Clearing active customer session items when leaving to Start Screen
       localStorage.removeItem('myRamenCart');
       localStorage.removeItem('myRamenSideAddons');
       localStorage.removeItem('myRamenInstructions');
