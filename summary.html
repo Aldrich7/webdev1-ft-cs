@@ -13,6 +13,8 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
     .add-more-btn {
       background: white;
@@ -37,7 +39,7 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
-      max-height: 52vh;
+      max-height: 48vh;
       overflow-y: auto;
       padding-right: 4px;
     }
@@ -50,7 +52,7 @@
       box-shadow: 0 3px 8px rgba(0,0,0,0.04);
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       position: relative;
     }
 
@@ -68,32 +70,126 @@
       color: var(--maroon);
     }
 
-    .cart-item-details {
+    .cart-item-base {
       font-size: 0.85rem;
       color: #665;
-      line-height: 1.4;
+      margin-top: 2px;
+    }
+
+    /* Individual Toppings Breakdown with +/- Counters */
+    .toppings-adjust-box {
+      background-color: #FAF7F2;
+      border: 1px solid #E6DDD0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toppings-adjust-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #8c7368;
+    }
+
+    .topping-row-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      padding: 2px 0;
+    }
+
+    .mini-qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mini-qty-btn {
+      background: var(--card-bg);
+      color: var(--maroon);
+      border: 1px solid var(--border);
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .mini-qty-btn:hover {
+      background: var(--maroon);
+      color: white;
     }
 
     .cart-item-controls {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: 4px;
+      padding-top: 6px;
+      border-top: 1px dashed #e6ddd0;
     }
 
     .remove-btn {
       background: transparent;
       border: none;
       color: #b91c1c;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
     }
     .remove-btn:hover {
       text-decoration: underline;
+    }
+
+    /* Interactive Side Add-ons Grid */
+    .addon-chips {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+      gap: 12px;
+    }
+
+    .addon-chip {
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .addon-chip.selected {
+      border-color: var(--maroon);
+      background: #FDF7EE;
+      box-shadow: 0 3px 10px rgba(92, 29, 36, 0.12);
+    }
+
+    .addon-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .addon-svg-icon {
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
+      color: var(--maroon);
     }
 
     .empty-cart-state {
@@ -109,7 +205,7 @@
 
   <div class="kiosk-container">
     <header class="top-nav">
-      <span class="nav-logo serif">MYRAMEN</span>
+      <a href="home.html" class="nav-logo serif">MYRAMEN</a>
       <div class="nav-icons">
         <a href="home.html" title="Back to Menu"><i class="fa-solid fa-house"></i></a>
       </div>
@@ -127,23 +223,120 @@
           <!-- Populated dynamically via summary.js -->
         </div>
 
-        <!-- Global Table Add-ons -->
-        <h3 class="serif" style="color: var(--maroon); margin-top: 14px; font-size: 1.15rem;">Side Add-ons</h3>
+        <!-- Global Table Side Add-ons -->
+        <h3 class="serif" style="color: var(--maroon); margin-top: 10px; font-size: 1.15rem;">Side Add-ons</h3>
         <div class="addon-chips">
-          <div class="addon-chip" id="addonTofu" onclick="toggleAddon('Fried Tofu', 20)">
-            <i class="fa-solid fa-cubes-stacked" style="color: var(--maroon);"></i>
-            <div>
-              <strong>Fried Tofu</strong>
-              <p style="font-size: 0.8rem; color: #666;">&#8369;20</p>
+          
+          <!-- Fried Tofu (Custom Crispy Tofu Cubes SVG) -->
+          <div class="addon-chip" id="addonTofu" onclick="toggleAddon('Fried Tofu')">
+            <div class="addon-info">
+              <svg class="addon-svg-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 4L26 9.5V20.5L16 26L6 20.5V9.5L16 4Z" fill="currentColor" fill-opacity="0.15"/>
+                <path d="M16 4L26 9.5L16 15L6 9.5L16 4Z"/>
+                <path d="M16 15V26"/>
+                <circle cx="11" cy="15" r="0.8" fill="currentColor"/>
+                <circle cx="21" cy="15" r="0.8" fill="currentColor"/>
+                <circle cx="16" cy="9.5" r="0.8" fill="currentColor"/>
+              </svg>
+              <div>
+                <strong>Fried Tofu</strong>
+                <p style="font-size: 0.8rem; color: #666;">&#8369;20 each</p>
+              </div>
+            </div>
+            <div class="mini-qty-controls" onclick="event.stopPropagation()">
+              <button class="mini-qty-btn" onclick="changeAddonQty('Fried Tofu', -1)">-</button>
+              <span id="qtyAddonTofu" style="min-width: 16px; text-align: center; font-weight: 800;">0</span>
+              <button class="mini-qty-btn" onclick="changeAddonQty('Fried Tofu', 1)">+</button>
             </div>
           </div>
-          <div class="addon-chip" id="addonMushroom" onclick="toggleAddon('Mushroom', 20)">
-            <i class="fa-solid fa-leaf" style="color: var(--maroon);"></i>
-            <div>
-              <strong>Mushroom</strong>
-              <p style="font-size: 0.8rem; color: #666;">&#8369;20</p>
+
+          <!-- Mushroom (Custom Shiitake Mushroom SVG) -->
+          <div class="addon-chip" id="addonMushroom" onclick="toggleAddon('Mushroom')">
+            <div class="addon-info">
+              <svg class="addon-svg-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 17C5 10.5 9.9 6 16 6C22.1 6 27 10.5 27 17H5Z" fill="currentColor" fill-opacity="0.18"/>
+                <path d="M13 17V25C13 26.1 13.9 27 15 27H17C18.1 27 19 26.1 19 25V17"/>
+                <path d="M12 10.5L15 13L18 10.5"/>
+                <path d="M14 13L16 14.5L18 13"/>
+              </svg>
+              <div>
+                <strong>Mushroom</strong>
+                <p style="font-size: 0.8rem; color: #666;">&#8369;20 each</p>
+              </div>
+            </div>
+            <div class="mini-qty-controls" onclick="event.stopPropagation()">
+              <button class="mini-qty-btn" onclick="changeAddonQty('Mushroom', -1)">-</button>
+              <span id="qtyAddonMushroom" style="min-width: 16px; text-align: center; font-weight: 800;">0</span>
+              <button class="mini-qty-btn" onclick="changeAddonQty('Mushroom', 1)">+</button>
             </div>
           </div>
+
+          <!-- Gyoza (Custom Pleated Dumpling SVG) -->
+          <div class="addon-chip" id="addonGyoza" onclick="toggleAddon('Gyoza')">
+            <div class="addon-info">
+              <svg class="addon-svg-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 21C4 14 9.5 9 16 9C22.5 9 28 14 28 21C24 23.5 8 23.5 4 21Z" fill="currentColor" fill-opacity="0.16"/>
+                <path d="M9 12C10 14 11 14.5 11.5 14.5"/>
+                <path d="M13.5 9.8C14 12 14.5 13 15 13.5"/>
+                <path d="M18.5 9.8C18 12 17.5 13 17 13.5"/>
+                <path d="M23 12C22 14 21 14.5 20.5 14.5"/>
+                <path d="M7 20C12 21.5 20 21.5 25 20" stroke-width="1.5"/>
+              </svg>
+              <div>
+                <strong>Gyoza</strong>
+                <p style="font-size: 0.8rem; color: #666;">&#8369;20 each</p>
+              </div>
+            </div>
+            <div class="mini-qty-controls" onclick="event.stopPropagation()">
+              <button class="mini-qty-btn" onclick="changeAddonQty('Gyoza', -1)">-</button>
+              <span id="qtyAddonGyoza" style="min-width: 16px; text-align: center; font-weight: 800;">0</span>
+              <button class="mini-qty-btn" onclick="changeAddonQty('Gyoza', 1)">+</button>
+            </div>
+          </div>
+
+          <!-- Siomai (Custom Steamed Dumpling Cup SVG) -->
+          <div class="addon-chip" id="addonSiomai" onclick="toggleAddon('Siomai')">
+            <div class="addon-info">
+              <svg class="addon-svg-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7 13L9 24C9.3 25.5 10.5 26 12 26H20C21.5 26 22.7 25.5 23 24L25 13" fill="currentColor" fill-opacity="0.16"/>
+                <path d="M6 13C8 11 10 14 12 12C14 10 18 10 20 12C22 14 24 11 26 13"/>
+                <circle cx="16" cy="10" r="2" fill="currentColor"/>
+                <path d="M12 16L13 23"/>
+                <path d="M20 16L19 23"/>
+              </svg>
+              <div>
+                <strong>Siomai</strong>
+                <p style="font-size: 0.8rem; color: #666;">&#8369;20 each</p>
+              </div>
+            </div>
+            <div class="mini-qty-controls" onclick="event.stopPropagation()">
+              <button class="mini-qty-btn" onclick="changeAddonQty('Siomai', -1)">-</button>
+              <span id="qtyAddonSiomai" style="min-width: 16px; text-align: center; font-weight: 800;">0</span>
+              <button class="mini-qty-btn" onclick="changeAddonQty('Siomai', 1)">+</button>
+            </div>
+          </div>
+
+          <!-- Kimchi (Custom Napa Cabbage & Chili Bowl SVG) -->
+          <div class="addon-chip" id="addonKimchi" onclick="toggleAddon('Kimchi')">
+            <div class="addon-info">
+              <svg class="addon-svg-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 18C5 23.5 9.9 27 16 27C22.1 27 27 23.5 27 18H5Z" fill="currentColor" fill-opacity="0.16"/>
+                <path d="M8 18C8 13.5 11 11 14 12C15 9.5 18.5 9.5 19.5 12C22 11.5 24.5 14 24 18"/>
+                <path d="M12 15C13.5 13.5 15.5 14 16.5 15.5"/>
+                <path d="M17.5 14.5C19 13.5 20.5 14.5 21 16"/>
+              </svg>
+              <div>
+                <strong>Kimchi</strong>
+                <p style="font-size: 0.8rem; color: #666;">&#8369;20 each</p>
+              </div>
+            </div>
+            <div class="mini-qty-controls" onclick="event.stopPropagation()">
+              <button class="mini-qty-btn" onclick="changeAddonQty('Kimchi', -1)">-</button>
+              <span id="qtyAddonKimchi" style="min-width: 16px; text-align: center; font-weight: 800;">0</span>
+              <button class="mini-qty-btn" onclick="changeAddonQty('Kimchi', 1)">+</button>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -153,11 +346,15 @@
           <h2 class="serif" style="font-size: 1.6rem; margin-bottom: 20px;">ORDER SUMMARY</h2>
           <div class="summary-bill-details">
             <div style="display: flex; justify-content: space-between;">
-              <span>Total Bowls (<span id="totalBowlsCount">0</span>):</span>
+              <span>Ramen Bowls (<span id="totalBowlsCount">0</span>):</span>
               <span>&#8369;<span id="billBowls">0</span></span>
             </div>
             <div style="display: flex; justify-content: space-between;">
-              <span>Add-ons:</span>
+              <span>Extra Toppings:</span>
+              <span>&#8369;<span id="billExtraToppings">0</span></span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Side Add-ons:</span>
               <span>&#8369;<span id="billAddons">0</span></span>
             </div>
             <div class="total-bill" style="display: flex; justify-content: space-between;">

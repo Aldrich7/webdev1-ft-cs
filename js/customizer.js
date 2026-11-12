@@ -1,39 +1,39 @@
 const steps = [
   {
     name: "soup",
+    label: "Step 1 of 5 • Soup Broth",
     title: "CHOOSE YOUR SOUP VARIATION",
     layout: "vertical",
-    options: ["Tsukemen", "Shio", "Miso", "Tonkotsu"],
-    hint: "Select your broth, then click NEXT"
+    options: ["Tsukemen", "Shio", "Miso", "Tonkotsu"]
   },
   {
     name: "richness",
+    label: "Step 2 of 5 • Broth Richness",
     title: "CHOOSE<br>YOUR<br>SOUP<br>RICHNESS",
     layout: "horizontal",
-    options: ["Mild", "Normal", "Rich"],
-    hint: "Select broth richness, then click NEXT"
+    options: ["Mild", "Normal", "Rich"]
   },
   {
     name: "noodleVar",
+    label: "Step 3 of 5 • Noodle Variation",
     title: "CHOOSE<br>YOUR<br>NOODLE<br>VARIATION",
     layout: "horizontal",
-    options: ["Ramen", "Udon", "Soba"],
-    hint: "Select noodle variety, then click NEXT"
+    options: ["Ramen", "Udon", "Soba"]
   },
   {
     name: "noodleType",
+    label: "Step 4 of 5 • Noodle Type",
     title: "CHOOSE<br>YOUR<br>NOODLE<br>TYPE",
     layout: "horizontal",
-    options: ["Stringy", "Firm", "Chewy"],
-    hint: "Select noodle texture, then click NEXT"
+    options: ["Stringy", "Firm", "Chewy"]
   },
   {
     name: "toppings",
-    title: "CHOOSE YOUR TOPPINGS & ADD-ONS",
+    label: "Step 5 of 5 • Toppings & Add-ons",
+    title: "CHOOSE YOUR TOPPINGS",
     layout: "mixed",
     sideOptions: ["Egg", "Naruto"],
-    bottomOptions: ["Menma", "Nori", "Nira", "Cabbage", "Chashu"],
-    hint: "Pick toppings, then review cart or add more!"
+    bottomOptions: ["Menma", "Nori", "Nira", "Cabbage", "Chashu"]
   }
 ];
 
@@ -98,97 +98,94 @@ function renderStep() {
   const sideTitle = document.getElementById("sidebarTitle");
   const sideOptions = document.getElementById("sidebarOptions");
   const bottomBar = document.getElementById("bottomBarContainer");
-  const promptHint = document.getElementById("promptHint");
+  const stepLabel = document.getElementById("stepProgressLabel");
   const nextBtn = document.getElementById("builderNextBtn");
   const addMoreBtn = document.getElementById("builderAddMoreBtn");
 
   sideTitle.innerHTML = step.title;
-  if (promptHint) promptHint.innerText = step.hint;
+  if (stepLabel) stepLabel.innerText = step.label;
   sideOptions.innerHTML = "";
   bottomBar.innerHTML = "";
 
-  // Step Tracker update
-  const trackerPills = document.querySelectorAll(".tracker-pill");
-  trackerPills.forEach((pill, idx) => {
-    pill.classList.remove("active", "completed");
-    if (idx === currentStep) pill.classList.add("active");
-    else if (idx < currentStep) pill.classList.add("completed");
-  });
-
-  // Modify action buttons on final step (Step 5)
+  // Final step button labels
   if (currentStep === steps.length - 1) {
-    nextBtn.innerText = "Review Cart & Checkout";
+    nextBtn.innerText = "CHECKOUT";
     addMoreBtn.style.display = "inline-block";
   } else {
     nextBtn.innerText = "NEXT";
     addMoreBtn.style.display = "none";
   }
 
-  // Step 1: Broth in Sidebar
+  // Step 1: Broth in Left Tall Panel
   if (step.layout === "vertical") {
-    sidebar.classList.remove("center-title");
+    sidebar.classList.remove("centered-mode");
+    sideOptions.style.display = "flex";
     bottomBar.style.display = "none";
     
     step.options.forEach(opt => {
       const btn = document.createElement("div");
-      btn.className = `tile-btn serif ${order.soup === opt ? "selected" : ""}`;
+      btn.className = `side-option-tile ${order.soup === opt ? "selected" : ""}`;
       btn.innerText = opt;
       btn.onclick = () => {
         order.soup = opt;
-        sideOptions.querySelectorAll(".tile-btn").forEach(el => el.classList.remove("selected"));
+        sideOptions.querySelectorAll(".side-option-tile").forEach(el => el.classList.remove("selected"));
         btn.classList.add("selected");
         updateVisualBowls();
       };
       sideOptions.appendChild(btn);
     });
   } 
-  // Steps 2-4: Horizontal Bottom Selection
+  // Steps 2-4: Left Panel becomes centered title, Options appear in Bottom Cards Row
   else if (step.layout === "horizontal") {
-    sidebar.classList.add("center-title");
+    sidebar.classList.add("centered-mode");
+    sideOptions.style.display = "none";
     bottomBar.style.display = "flex";
 
     step.options.forEach(opt => {
-      const tile = document.createElement("div");
-      tile.className = `bottom-tile serif ${order[step.name] === opt ? "selected" : ""}`;
-      tile.innerText = opt;
-      tile.onclick = () => {
+      const card = document.createElement("div");
+      card.className = `bottom-option-card ${order[step.name] === opt ? "selected" : ""}`;
+      card.innerText = opt;
+      card.onclick = () => {
         order[step.name] = opt;
-        bottomBar.querySelectorAll(".bottom-tile").forEach(el => el.classList.remove("selected"));
-        tile.classList.add("selected");
+        bottomBar.querySelectorAll(".bottom-option-card").forEach(el => el.classList.remove("selected"));
+        card.classList.add("selected");
         updateVisualBowls();
       };
-      bottomBar.appendChild(tile);
+      bottomBar.appendChild(card);
     });
 
-    const arrow = document.createElement("div");
-    arrow.className = "nav-arrow-tile";
+    const arrow = document.createElement("button");
+    arrow.className = "circle-arrow-btn";
+    arrow.title = "Next Step";
     arrow.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
     arrow.onclick = nextStep;
     bottomBar.appendChild(arrow);
   } 
-  // Step 5: Mixed Toppings
+  // Step 5: Toppings in both Left Panel and Bottom Cards Row
   else if (step.layout === "mixed") {
-    sidebar.classList.remove("center-title");
+    sidebar.classList.remove("centered-mode");
+    sideOptions.style.display = "flex";
     bottomBar.style.display = "flex";
 
     step.sideOptions.forEach(opt => {
       const btn = document.createElement("div");
-      btn.className = `tile-btn serif ${order.toppings.includes(opt) ? "selected" : ""}`;
+      btn.className = `side-option-tile ${order.toppings.includes(opt) ? "selected" : ""}`;
       btn.innerText = opt;
       btn.onclick = () => { toggleTopping(opt); };
       sideOptions.appendChild(btn);
     });
 
     step.bottomOptions.forEach(opt => {
-      const tile = document.createElement("div");
-      tile.className = `bottom-tile serif ${order.toppings.includes(opt) ? "selected" : ""}`;
-      tile.innerText = opt;
-      tile.onclick = () => { toggleTopping(opt); };
-      bottomBar.appendChild(tile);
+      const card = document.createElement("div");
+      card.className = `bottom-option-card ${order.toppings.includes(opt) ? "selected" : ""}`;
+      card.innerText = opt;
+      card.onclick = () => { toggleTopping(opt); };
+      bottomBar.appendChild(card);
     });
 
-    const arrow = document.createElement("div");
-    arrow.className = "nav-arrow-tile";
+    const arrow = document.createElement("button");
+    arrow.className = "circle-arrow-btn";
+    arrow.title = "Finish";
     arrow.innerHTML = '<i class="fa-solid fa-check"></i>';
     arrow.onclick = nextStep;
     bottomBar.appendChild(arrow);
@@ -232,7 +229,6 @@ function toggleTopping(item) {
   renderStep();
 }
 
-// Add customized bowl to multi-item cart
 function saveCurrentCustomToCart() {
   let cart = [];
   try {
@@ -288,13 +284,6 @@ function prevStep() {
     setTimeout(() => {
       window.location.href = "home.html";
     }, 240);
-  }
-}
-
-function jumpToStep(targetIndex) {
-  if (targetIndex >= 0 && targetIndex < steps.length) {
-    currentStep = targetIndex;
-    renderStep();
   }
 }
 
