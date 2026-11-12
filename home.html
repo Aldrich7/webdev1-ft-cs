@@ -104,9 +104,98 @@
       letter-spacing: 1px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.4);
     }
+
+    /* ==================== EXIT CONFIRMATION MODAL ==================== */
+    .confirm-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(24, 8, 10, 0.65);
+      backdrop-filter: blur(2px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+      padding: 20px;
+    }
+
+    .confirm-modal-backdrop.active {
+      display: flex;
+      animation: fadeInModal 0.2s ease forwards;
+    }
+
+    @keyframes fadeInModal {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .confirm-modal-box {
+      background: var(--cream);
+      border: 3px solid var(--maroon);
+      border-radius: 14px;
+      padding: 28px 24px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.5);
+      transform: scale(0.95);
+      animation: popModal 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes popModal {
+      to { transform: scale(1); }
+    }
+
+    .confirm-modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .modal-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .modal-btn-cancel {
+      background: white;
+      color: var(--text);
+      border: 2px solid var(--border);
+    }
+    .modal-btn-cancel:hover {
+      background: var(--card-bg);
+    }
+
+    .modal-btn-confirm {
+      background: #b91c1c;
+      color: white;
+      border: 2px solid #991b1b;
+    }
+    .modal-btn-confirm:hover {
+      background: #991b1b;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Leave Menu Confirmation Modal -->
+  <div class="confirm-modal-backdrop" id="exitMenuModal">
+    <div class="confirm-modal-box">
+      <i class="fa-solid fa-right-from-bracket" style="font-size: 2.4rem; color: var(--maroon); margin-bottom: 12px;"></i>
+      <h3 class="serif" style="color: var(--maroon); font-size: 1.4rem; margin-bottom: 8px;">Leave Menu Screen?</h3>
+      <p style="font-size: 0.95rem; color: #555; line-height: 1.4;">
+        Do you really want to exit and return to the Start Screen? Any items in your current cart will be cleared.
+      </p>
+      <div class="confirm-modal-actions">
+        <button class="modal-btn modal-btn-cancel serif" onclick="closeExitModal()">Stay on Menu</button>
+        <button class="modal-btn modal-btn-confirm serif" onclick="confirmExitToStart()">Yes, Leave</button>
+      </div>
+    </div>
+  </div>
 
   <div class="kiosk-container">
 
@@ -132,7 +221,7 @@
         <i class="fa-solid fa-xmark" id="closeDrawerBtn" style="font-size: 1.4rem; cursor: pointer;"></i>
       </div>
       <ul class="drawer-nav" style="flex: 1;">
-        <li><a href="index.html"><i class="fa-solid fa-power-off"></i> Welcome Screen</a></li>
+        <li><a href="#" onclick="openExitModal(event)"><i class="fa-solid fa-power-off"></i> Welcome Screen</a></li>
         <li><a href="home.html"><i class="fa-solid fa-utensils"></i> Full Menu Catalog</a></li>
         <li><a href="customize.html"><i class="fa-solid fa-wand-magic-sparkles"></i> Create Custom Ramen</a></li>
         <li><a href="summary.html"><i class="fa-solid fa-cart-shopping"></i> View Cart & Checkout</a></li>
@@ -156,10 +245,12 @@
         <i class="fa-solid fa-xmark" id="clearSearchBtn" style="cursor: pointer;" title="Clear"></i>
       </div>
       <div class="nav-icons">
-        <a href="home.html" title="Home"><i class="fa-solid fa-house"></i></a>
         <a href="summary.html" title="Cart / Summary" class="cart-btn-wrapper">
           <i class="fa-solid fa-cart-shopping"></i>
           <span class="cart-badge" id="cartNavBadge">0</span>
+        </a>
+        <a href="#" onclick="openExitModal(event)" title="Leave Menu / Exit to Start">
+          <i class="fa-solid fa-right-from-bracket"></i>
         </a>
       </div>
     </header>
@@ -260,6 +351,29 @@
     closeBtn.addEventListener('click', closeMenu);
     backdrop.addEventListener('click', closeMenu);
 
+    // Exit Confirmation Modal Handlers
+    function openExitModal(e) {
+      if (e) e.preventDefault();
+      closeMenu();
+      document.getElementById('exitMenuModal').classList.add('active');
+    }
+
+    function closeExitModal() {
+      document.getElementById('exitMenuModal').classList.remove('active');
+    }
+
+    function confirmExitToStart() {
+      // Clear active customer session items when leaving to Start Screen
+      localStorage.removeItem('myRamenCart');
+      localStorage.removeItem('myRamenSideAddons');
+      localStorage.removeItem('myRamenInstructions');
+
+      document.body.classList.add('page-exit');
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 240);
+    }
+
     const searchInput = document.getElementById('catalogSearch');
     const clearBtn = document.getElementById('clearSearchBtn');
     searchInput.addEventListener('input', (e) => {
@@ -296,7 +410,6 @@
       }
     }
 
-    // Check Admin Sold-Out Settings
     function applySoldOutStatus() {
       let soldOut = [];
       try { soldOut = JSON.parse(localStorage.getItem('myRamenSoldOut')) || []; } catch (e) {}
