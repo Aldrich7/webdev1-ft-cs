@@ -45,7 +45,7 @@ let order = {
   richness: "Normal",
   noodleVar: "Ramen",
   noodleType: "Firm",
-  toppings: ["Egg", "Naruto", "Nori", "Chashu"],
+  toppings: [],
   price: 150
 };
 
@@ -71,7 +71,9 @@ const plateCoordinates = [
   { top: "18%", left: "54%" },
   { top: "45%", left: "14%" },
   { top: "48%", left: "56%" },
-  { top: "66%", left: "34%" }
+  { top: "66%", left: "34%" },
+  { top: "32%", left: "36%" },
+  { top: "62%", left: "16%" }
 ];
 
 function getSoldOutItems() {
@@ -110,7 +112,7 @@ function renderStep() {
   const addMoreBtn = document.getElementById("builderAddMoreBtn");
   const soldOut = getSoldOutItems();
 
-  // For removing any sold-out default toppings/broths automatically
+  // Remove any sold-out toppings/broths automatically
   order.toppings = order.toppings.filter(t => !soldOut.includes(t));
   if (soldOut.includes(order.soup)) {
     const availableSoup = steps[0].options.find(s => !soldOut.includes(s));
@@ -190,8 +192,9 @@ function renderStep() {
 
     step.sideOptions.forEach(opt => {
       const isOut = soldOut.includes(opt);
+      const isSelected = order.toppings.includes(opt) && !isOut;
       const btn = document.createElement("div");
-      btn.className = `side-option-tile ${order.toppings.includes(opt) && !isOut ? "selected" : ""}`;
+      btn.className = isSelected ? "side-option-tile selected" : "side-option-tile";
       btn.innerHTML = isOut ? `<span style="text-decoration:line-through;opacity:0.5;">${opt}</span>` : opt;
       if (isOut) {
         btn.style.cursor = "not-allowed";
@@ -204,8 +207,9 @@ function renderStep() {
 
     step.bottomOptions.forEach(opt => {
       const isOut = soldOut.includes(opt);
+      const isSelected = order.toppings.includes(opt) && !isOut;
       const card = document.createElement("div");
-      card.className = `bottom-option-card ${order.toppings.includes(opt) && !isOut ? "selected" : ""}`;
+      card.className = isSelected ? "bottom-option-card selected" : "bottom-option-card";
       card.innerHTML = isOut ? `<span style="text-decoration:line-through;opacity:0.5;">${opt}</span>` : opt;
       if (isOut) {
         card.style.cursor = "not-allowed";
@@ -324,5 +328,6 @@ document.getElementById("builderBackBtn").addEventListener("click", prevStep);
 document.getElementById("builderAddMoreBtn").addEventListener("click", addMoreCustom);
 
 document.addEventListener("DOMContentLoaded", () => {
+  order.toppings = [];
   renderStep();
 });

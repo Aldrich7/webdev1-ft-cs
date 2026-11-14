@@ -41,7 +41,6 @@ function loadCart() {
     customInstructions = '';
   }
 
-  // Initialize default topping quantities to 1 (capped at MAX_TOPPING_QTY)
   cart.forEach(item => {
     if (!item.toppingQuantities) {
       item.toppingQuantities = {};
